@@ -1,0 +1,21 @@
+From ad88088b3e7f88b522a63c4f400009ad368a7ef4 Mon Sep 17 00:00:00 2001
+From: Bruno Coudoin <bruno.coudoin@gcompris.net>
+Date: Tue, 15 Mar 2016 01:13:14 +0100
+Subject: [PATCH] balancebox, no more build it if box2d is disabled
+
+---
+ src/activities/balancebox/CMakeLists.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/activities/balancebox/CMakeLists.txt b/src/activities/balancebox/CMakeLists.txt
+index a9c2227..e11e390 100644
+--- a/src/activities/balancebox/CMakeLists.txt
++++ b/src/activities/balancebox/CMakeLists.txt
+@@ -1 +1,3 @@
+-GCOMPRIS_ADD_RCC(activities/balancebox *.qml *.svg *.js resource/* editor/*)
++if(NOT QML_BOX2D_MODULE STREQUAL disabled)
++  GCOMPRIS_ADD_RCC(activities/balancebox *.qml *.svg *.js resource/* editor/*)
++endif()
+-- 
+2.7.0
+

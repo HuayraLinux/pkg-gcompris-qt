@@ -1,0 +1,10 @@
+# WARNING: you don't want to --download this, the URL does not point
+# to a tarball.  This is only for monitoring of upstream git tags.
+
+version=3
+
+# FIXME: should try something like dowloadurlmangle=s|http://quickgit\.kde\.org/\?p=gcompris\.git&amp;a=tag&amp;t=([vV].+)|http://quickgit.kde.org/?p=gcompris.git&amp;a=snapshot&amp;t=$1&amp;fmt=tbz2|
+
+opts="filenamemangle=s/.*&t=(.*)&.*/gcompris-qt-$1.tar.bz2/" \
+http://quickgit.kde.org/?p=gcompris.git&a=tags \
+  http://quickgit\.kde\.org/\?p=gcompris\.git&amp;a=tag&amp;t=[vV](.+)
