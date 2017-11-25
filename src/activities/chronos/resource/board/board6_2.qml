@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 
 QtObject {
    property string instruction: qsTr("Cars")
@@ -32,18 +32,18 @@ QtObject {
           "height": 0.4
       },
       {
-          "pixmapfile": "images/fardier.png",
-          "x": "0.5",
-          "y": "0.9",
+          "pixmapfile": "images/fardier.svg",
+          "x": 0.5,
+          "y": 0.9,
           "width": 0.4,
-          "height": 0.2
+          "height": 0.14
       },
       {
-          "pixmapfile": "images/benz1885.png",
-          "x": "0.75",
-          "y": "0.55",
+          "pixmapfile": "images/benz1885.svg",
+          "x": 0.75,
+          "y": 0.55,
           "width": 0.4,
-          "height": 0.4
+          "height": 0.32
       },
       {
           "text": qsTr("1878 Amédée Bollée's La Mancelle"),

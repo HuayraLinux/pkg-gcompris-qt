@@ -19,7 +19,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.1
+import QtQuick 2.6
 import QtGraphicalEffects 1.0
 import GCompris 1.0
 
@@ -37,7 +37,7 @@ ActivityBase {
     pageComponent: Image {
         id: background
         source: "qrc:/gcompris/src/activities/menu/resource/background.svg"
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         fillMode: Image.PreserveAspectCrop
         anchors.fill: parent
         signal start
@@ -103,19 +103,30 @@ ActivityBase {
             GCText {
                 id: questionItem
                 text: qsTr("Set the watch to:") + " " +
-                      Activity.get2CharValue(
-                          items.targetH) + ":" + Activity.get2CharValue(
-                          items.targetM) + ":" + Activity.get2CharValue(
-                          items.targetS)
-                fontSize: 18
+                      //~ singular %n hour
+                      //~ plural %n hours
+                      addNbsp(qsTr("%n hour(s)", "", items.targetH)) + " " +
+                      //~ singular %n minute
+                      //~ plural %n minutes
+                      addNbsp(qsTr("%n minute(s)", "", items.targetM)) +
+                      //~ singular %n second
+                      //~ plural %n seconds
+                      (s.visible ? " " + addNbsp(qsTr("%n second(s)", "", items.targetS)) : "")
+                fontSize: mediumSize
+                textFormat: Text.RichText
                 font.weight: Font.DemiBold
                 color: "white"
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
+                width: background.width
                 anchors {
                     horizontalCenter: parent.horizontalCenter
                     top: parent.top
                     margins: 10
+                }
+                // We don't want the wrapping to happen anywhere, set no break space
+                function addNbsp(str) {
+                    return str.replace(" ", "&nbsp;");
                 }
             }
         }
@@ -209,6 +220,7 @@ ActivityBase {
                 GCText {
                     text: index + 1
                     font {
+                        pointSize: NaN  // need to clear font.pointSize explicitly
                         pixelSize: Math.max(clock.radius / 30, 1)
                         bold: items.currentH === ((index + 1) % 12)
                         underline: items.currentH === ((index + 1) % 12)
@@ -257,6 +269,7 @@ ActivityBase {
                           items.currentH) + ":" + Activity.get2CharValue(
                           items.currentM) + ":" + Activity.get2CharValue(
                           items.currentS)
+                font.pointSize: NaN
                 font.pixelSize: Math.max(clock.radius / 30, 1)
                 anchors {
                     verticalCenter: clock.verticalCenter
@@ -402,7 +415,6 @@ ActivityBase {
 
                 onReleased: {
                     Activity.selectedArrow = null
-
                     if (items.currentH === items.targetH
                             && items.currentM === items.targetM
                             && items.currentS === items.targetS) {

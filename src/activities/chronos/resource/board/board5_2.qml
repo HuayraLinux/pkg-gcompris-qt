@@ -19,29 +19,29 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 
 QtObject {
    property string instruction: qsTr("Transportation")
    property variant levels: [
       {
-          "pixmapfile": "images/celerifere.png",
-          "x": "0.2",
-          "y": "0.55",
+          "pixmapfile": "images/celerifere.svg",
+          "x": 0.2,
+          "y": 0.55,
           "width": 0.4,
-          "height": 0.4
+          "height": 0.406
       },
       {
-          "pixmapfile": "images/fardier.png",
-          "x": "0.5",
-          "y": "0.9",
+          "pixmapfile": "images/fardier.svg",
+          "x": 0.5,
+          "y": 0.9,
           "width": 0.4,
-          "height": 0.2
+          "height": 0.14
       },
       {
           "pixmapfile": "images/Eole.svg",
-          "x": "0.75",
-          "y": "0.55",
+          "x": 0.75,
+          "y": 0.55,
           "width": 0.4,
           "height": 0.4
       },

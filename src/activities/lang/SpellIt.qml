@@ -21,7 +21,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import QtGraphicalEffects 1.0
 
@@ -67,7 +67,7 @@ Item {
         id: background
         source: "qrc:/gcompris/src/activities/lang/resource/imageid-bg.svg"
         fillMode: Image.PreserveAspectCrop
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         height: parent.height
 
         property bool horizontalLayout: background.width > background.height
@@ -224,6 +224,7 @@ Item {
                 font.weight: Font.DemiBold
                 font.family: GCSingletonFontLoader.fontLoader.name
                 font.capitalization: ApplicationSettings.fontCapitalization
+                font.letterSpacing: ApplicationSettings.fontLetterSpacing
                 maximumLength: maximumLengthAnswer
                 onAccepted: {
                     okMouseArea.clicked(okMouseArea)

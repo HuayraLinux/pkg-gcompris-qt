@@ -21,8 +21,8 @@
  */
 
 .pragma library
-.import QtQuick 2.0 as Quick 
-.import GCompris 1.0 as GCompris 
+.import QtQuick 2.6 as Quick
+.import GCompris 1.0 as GCompris
 .import "qrc:/gcompris/src/core/core.js" as Core
 .import "qrc:/gcompris/src/activities/lang/lang_api.js" as Lang
 
@@ -51,7 +51,7 @@ function start(items_) {
     currentLevel = 0;
     currentSubLevel = 0;
     items.remainingLife = 6;
-    
+
     var locale = GCompris.ApplicationInfo.getVoicesLocale(items.locale)
 
     var resourceUrl = "qrc:/gcompris/src/activities/lang/resource/"
@@ -59,43 +59,16 @@ function start(items_) {
     // register the voices for the locale
     GCompris.DownloadManager.updateResource(
                 GCompris.DownloadManager.getVoicesResourceForLocale(locale))
-    
-    dataset = Lang.load(items.parser, resourceUrl, "words.json",
-                        "content-"+ locale +".json")
 
-    // If dataset is empty, we try to load from short locale
-    // and if not present again, we switch to default one
-    var localeUnderscoreIndex = locale.indexOf('_')
-    if(!dataset) {
-        var localeShort;
-        // We will first look again for locale xx (without _XX if exist)
-        if(localeUnderscoreIndex > 0) {
-            localeShort = locale.substring(0, localeUnderscoreIndex)
-        } else {
-            localeShort = locale;
-        }
-        dataset = Lang.load(items.parser, resourceUrl, "words.json",
-                            "content-"+localeShort+ ".json")
-    }
-
-    // If still dataset is empty then fallback to english
-    if(!dataset) {
-        // English fallback
-        items.background.englishFallback = true
-        dataset = Lang.load(items.parser, resourceUrl, "words.json",
-                            "content-en.json")
-    } else {
-        items.background.englishFallback = false
-    }
-
+    var data = Lang.loadDataset(items.parser, resourceUrl, locale);
+    dataset = data["dataset"];
+    items.background.englishFallback = data["englishFallback"];
     lessons = Lang.getAllLessons(dataset)
     maxLevel = lessons.length
     initLevel();
-    
 }
 
 function stop() {
-
 }
 
 function initLevel() {
@@ -113,35 +86,34 @@ function initLevel() {
         subLevelsLeft.push(i)
 
     initSubLevel();
-    {
-        //to set the layout...populate
-        var letters = new Array();
-        for (var i = 0; i < wordList.length; i++) {
-            var word = wordList[i].translatedTxt;
-            for (var j = 0; j < word.length; j++) {
-                var letter = word.charAt(j).toLocaleLowerCase();
-                if (letters.indexOf(letter) === -1)
-                    letters.push(word.charAt(j));
-            }
+
+    //to set the layout...populate
+    var letters = new Array();
+    for (var i = 0; i < wordList.length; i++) {
+        var word = wordList[i].translatedTxt;
+        for (var j = 0; j < word.length; j++) {
+            var letter = word.charAt(j).toLocaleLowerCase();
+            if (letters.indexOf(letter) === -1)
+                letters.push(letter);
         }
-        letters.sort();
-        // Remove space character if in list
-        var indexOfSpace = letters.indexOf(' ')
-        if(indexOfSpace > -1)
-            letters.splice(indexOfSpace, 1)
-        // generate layout from letter map
-        var layout = new Array();
-        var row = 0;
-        var offset = 0;
-        while (offset < letters.length-1) {
-            var cols = letters.length <= 10
-                    ? letters.length : (Math.ceil((letters.length-offset) / (3 - row)));
-            layout[row] = new Array();
-            for (var j = 0; j < cols; j++)
-                layout[row][j] = { label: letters[j+offset] };
-            offset += j;
-            row++;
-        }
+    }
+    letters = GCompris.ApplicationInfo.localeSort(letters, items.locale);
+    // Remove space character if in list
+    var indexOfSpace = letters.indexOf(' ')
+    if(indexOfSpace > -1)
+        letters.splice(indexOfSpace, 1)
+    // generate layout from letter map
+    var layout = new Array();
+    var row = 0;
+    var offset = 0;
+    while (offset < letters.length-1) {
+        var cols = letters.length <= 10
+                ? letters.length : (Math.ceil((letters.length-offset) / (3 - row)));
+        layout[row] = new Array();
+        for (var j = 0; j < cols; j++)
+            layout[row][j] = { label: letters[j+offset] };
+        offset += j;
+        row++;
     }
     items.keyboard.layout = layout;
 
@@ -164,6 +136,9 @@ function processKeyPress(text) {
     // Add the character to the already typed characters
     alreadyTypedLetters.push(text);
 
+    // add the typed character in the "Attempted characters" text field
+    createAttemptedText()
+
     // Get all the indices of this letter in the word
     var indices = [];
     for(var i = 0 ; i < currentWord.length ; i ++) {
@@ -185,7 +160,8 @@ function processKeyPress(text) {
         // For all the indices found, we replace the "_" by the letter
         for(var index = 0 ; index < indices.length ; index ++) {
             // Characters in the word displayed are separated by spaces, this is why we do 2*index
-            items.hidden.text = items.hidden.text.replaceAt(2*indices[index], text);
+            items.hidden.text = items.hidden.text.replaceAt(2*indices[index],
+                                                            currentWord[indices[index]]);
         }
     }
 
@@ -222,11 +198,13 @@ function initSubLevel() {
     items.goodWordIndex = subLevelsLeft.pop()
     items.ok.visible = false
     items.goodWord = wordList[items.goodWordIndex]
-    items.wordImage.changeSource("qrc:/gcompris/data/" + items.goodWord.image);
+    items.wordImage.changeSource(items.goodWord.image);
     items.remainingLife = 6;
     alreadyTypedLetters = new Array();
     currentWord = items.goodWord.translatedTxt;
     items.hidden.text = ""
+    createAttemptedText()
+
     for(var i = 0; i < currentWord.length ; ++ i) {
         if(currentWord[i] == " ") {
             items.hidden.text = items.hidden.text + " " + " "
@@ -234,6 +212,11 @@ function initSubLevel() {
             items.hidden.text = items.hidden.text + sp;
         }
     }
+}
+
+function createAttemptedText() {
+    alreadyTypedLetters.sort()
+    items.guessedText.text = qsTr("Attempted: %1").arg(alreadyTypedLetters.join(", "))
 }
 
 function nextSubLevel() {

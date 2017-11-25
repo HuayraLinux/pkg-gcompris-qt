@@ -19,9 +19,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.0
-import QtGraphicalEffects 1.0
-
+import QtQuick 2.6
 import GCompris 1.0
 
 import "colormix.js" as Activity
@@ -33,50 +31,22 @@ Image {
 
     property int maxSteps: 10
     property int currentStep: 0
-    property real hue
+    property string brushHue
 
     Image {
         id: intensityScreen
-        source: Activity.url + "flashlight2.svg"
+        source: Activity.url + "flashlight2" + brushHue + ".svg"
         sourceSize.height: parent.sourceSize.height
+        sourceSize.width: parent.sourceSize.width
         z: 2
-        visible: false
-    }
-
-    Colorize {
-        anchors.fill: intensityScreen
-        source: intensityScreen
-        hue: chooser.hue
-        lightness: -(maxSteps - currentStep) / maxSteps
-        saturation: 1
-        visible: activity.modeRGB ? true : false
-    }
-
-    Image {
-        id: intensityLight
-        source: Activity.url + "light.svg"
-        sourceSize.height: intensityScreen.sourceSize.height / 2
-        visible: false
-        anchors {
-            left: intensityScreen.right
-            leftMargin: -20 * ApplicationInfo.ratio
-            verticalCenter: intensityScreen.verticalCenter
-        }
         opacity: currentStep / maxSteps
-    }
-
-    Colorize {
-        anchors.fill: intensityLight
-        source: intensityLight
-        hue: chooser.hue
-        lightness: -(maxSteps - currentStep) / maxSteps
-        saturation: 1
-        visible: intensityScreen.visible
+        visible: activity.modeRGB
     }
 
     Image {
         id: intensityBrush
-        source: Activity.url + (activity.modeRGB ? "light.svg" : "brush.svg")
+        source: Activity.url + (activity.modeRGB ? 
+                    "light" + brushHue + ".svg" : "brush" + brushHue + ".svg")
         sourceSize.height: parent.sourceSize.height * 0.25 + currentStep / maxSteps * 15
         z: 2
         anchors {
@@ -84,17 +54,9 @@ Image {
             leftMargin: activity.modeRGB ? -20 * ApplicationInfo.ratio : 0
             verticalCenter: parent.verticalCenter
         }
-        visible: false
-        fillMode: Image.PreserveAspectFit        
-    }
-
-    Colorize {
-        anchors.fill: intensityBrush
-        source: intensityBrush
-        hue: chooser.hue
-        lightness: 0
-        saturation: 1
+        opacity: activity.modeRGB ? currentStep / maxSteps * 2 : 1
         visible: currentStep > 0
+        fillMode: Image.PreserveAspectFit        
     }
 
     ColorButton {

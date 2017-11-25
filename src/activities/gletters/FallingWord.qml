@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 import QtGraphicalEffects 1.0
 import GCompris 1.0
 
@@ -86,7 +86,8 @@ Item {
             return
 
         if(word.mode === 'letter') {
-            unmatchedIndex = c.length
+            // Only highlight letter if it is the good one
+            unmatchedIndex = text === c ? c.length : 0
             return (text === c)
         } else {
             var chars = text.split("");

@@ -21,7 +21,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import QtGraphicalEffects 1.0
 
@@ -58,8 +58,9 @@ Item {
         id: background
         source: "qrc:/gcompris/src/activities/lang/resource/imageid-bg.svg"
         fillMode: Image.PreserveAspectCrop
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         height: parent.height
+        anchors.fill: parent
 
         property bool keyNavigation: false
 
@@ -94,6 +95,12 @@ Item {
             keyNavigation = true
             wordListView.currentItem.children[1].pressed()
         }
+        Keys.onReleased: {
+            if (event.key === Qt.Key_Back) {
+                event.accepted = true
+                imageReview.start()
+            }
+        }
 
         JsonParser {
             id: parser
@@ -127,7 +134,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
                     source: "qrc:/gcompris/src/activities/lang/resource/imageid_frame.svg"
-                    sourceSize.width: quiz.horizontalLayout ? parent.width * 0.7 : parent.height * 1.2
+                    sourceSize.width: quiz.horizontalLayout ? parent.width * 0.7 : quiz.width - repeatItem.width - score.width - 50 * ApplicationInfo.ratio
                     z: 11
                     visible: QuizActivity.mode !== 3
 
@@ -220,7 +227,7 @@ Item {
                         id: wordImageQuiz
                         width: height
                         height: wordListView.buttonHeight
-                        source: "qrc:/gcompris/data/" + image
+                        source: image
                         z: 7
                         fillMode: Image.PreserveAspectFit
                         anchors.leftMargin: 5 * ApplicationInfo.ratio
@@ -267,6 +274,7 @@ Item {
 
         Score {
             id: score
+            parent: quiz
             anchors.bottom: undefined
             anchors.bottomMargin: 10 * ApplicationInfo.ratio
             anchors.right: parent.right

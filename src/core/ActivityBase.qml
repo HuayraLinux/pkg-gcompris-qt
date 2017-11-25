@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
+import QtQuick 2.6
 import GCompris 1.0
 import "qrc:/gcompris/src/core/core.js" as Core
 
@@ -219,7 +219,8 @@ Item {
 
     Loader {
         id: demoPageLoader
-        source: "BuyMeOverlay.qml"
+        source: ApplicationSettings.activationMode == 1 ?
+                    "BuyMeOverlayInapp.qml" : "BuyMeOverlay.qml"
         anchors.fill: parent
         active: !activityInfo.demo && ApplicationSettings.isDemoMode
     }

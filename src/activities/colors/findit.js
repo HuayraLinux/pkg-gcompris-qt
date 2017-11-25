@@ -17,7 +17,7 @@
  */
 
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 .import "qrc:/gcompris/src/core/core.js" as Core
 
 var url = "qrc:/gcompris/src/activities/colors/resource/"
@@ -28,6 +28,8 @@ var items
 var dataset
 
 var currentQuestion
+
+var hasWon
 
 function start(items_, dataset_, mode_) {
     if (mode_ == "Colors")
@@ -59,6 +61,7 @@ function initLevel() {
 
     // Shuffle again not to ask the question in the model order
     dataset[currentLevel] = Core.shuffle(dataset[currentLevel])
+    hasWon = false
     initQuestion()
 }
 
@@ -73,6 +76,7 @@ function initQuestion() {
 function nextQuestion() {
     if(dataset[currentLevel].length <= currentQuestion + 1) {
         items.bonus.good("flower")
+        hasWon = true
     } else {
         currentQuestion++
         items.score.currentSubLevel++

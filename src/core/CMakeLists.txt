@@ -2,10 +2,6 @@ include(qt_helper)
 
 configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h" @ONLY)
 
-if(WITH_ACTIVATION_CODE)
-  add_definitions(-DWITH_ACTIVATION_CODE)
-endif()
-
 if(WITH_KIOSK_MODE)
   add_definitions(-DWITH_KIOSK_MODE)
 endif()
@@ -27,6 +23,8 @@ set(gcompris_SRCS
    ApplicationSettings.h
    File.cpp
    File.h
+   Directory.cpp
+   Directory.h
    DownloadManager.cpp
    DownloadManager.h
 )
@@ -67,14 +65,15 @@ endif()
 if(ANDROID)
   add_library(${GCOMPRIS_EXECUTABLE_NAME} SHARED ${gcompris_SRCS} ${gcompris_MOC})
   qt5_use_modules(${GCOMPRIS_EXECUTABLE_NAME} Qml Quick Gui Multimedia Core Svg Xml XmlPatterns Sensors AndroidExtras)
-else()
+elseif(CMAKE_HOST_APPLE)
   add_executable(${GCOMPRIS_EXECUTABLE_NAME} MACOSX_BUNDLE ${gcompris_SRCS} ${gcompris_MOC} ${gcompris_RES})
   qt5_use_modules(${GCOMPRIS_EXECUTABLE_NAME} Qml Quick Gui Multimedia Network XmlPatterns Svg Xml Sensors Core)
-endif()
-
-if(CMAKE_HOST_WIN32)
-  # Remove the console for windows
-  set_target_properties(${GCOMPRIS_EXECUTABLE_NAME} PROPERTIES LINK_FLAGS -Wl,-subsystem,windows)
+elseif(CMAKE_HOST_WIN32)
+  add_executable(${GCOMPRIS_EXECUTABLE_NAME} WIN32 ${gcompris_SRCS} ${gcompris_MOC} ${gcompris_RES})
+  qt5_use_modules(${GCOMPRIS_EXECUTABLE_NAME} Qml Quick Gui Multimedia Network XmlPatterns Svg Xml Sensors Core)
+else()
+  add_executable(${GCOMPRIS_EXECUTABLE_NAME} ${gcompris_SRCS} ${gcompris_MOC} ${gcompris_RES})
+  qt5_use_modules(${GCOMPRIS_EXECUTABLE_NAME} Qml Quick Gui Multimedia Network XmlPatterns Svg Xml Sensors Core)
 endif()
 
 GCOMPRIS_ADD_RCC(core *.qml *.js resource/*.${COMPRESSED_AUDIO} resource/*.gif resource/*.png resource/*.svg resource/bonus/* resource/sounds/* resource/fonts/* qmldir)
@@ -99,7 +98,7 @@ if(BUILD_STANDALONE)
   elseif(WIN32)
     list(APPEND _qt_plugins Qt5::QWindowsIntegrationPlugin Qt5::QWindowsAudioPlugin Qt5::AudioCaptureServicePlugin Qt5::DSServicePlugin)
   elseif(UNIX AND NOT ANDROID AND NOT SAILFISHOS)
-    list(APPEND _qt_plugins Qt5::QXcbIntegrationPlugin)
+    list(APPEND _qt_plugins Qt5::QXcbIntegrationPlugin Qt5::QXcbEglIntegrationPlugin Qt5::QXcbGlxIntegrationPlugin)
   endif()
 
   list(APPEND _qt_plugins Qt5::genericSensorPlugin Qt5::QtSensorGesturePlugin Qt5::QShakeSensorGesturePlugin)
@@ -134,12 +133,6 @@ if(BUILD_STANDALONE)
     list(APPEND _qml_plugins
       QtQuick/Controls/${_lib_prefix}qtquickcontrolsplugin
       QtQuick/Layouts/${_lib_prefix}qquicklayoutsplugin)
-  endif()
-
-  if(NOT WIN32 AND NOT SAILFISHOS)
-    list(APPEND _qml_plugins
-      QtAudioEngine/${_lib_prefix}declarative_audioengine
-      Box2D.2.0/${_lib_prefix}Box2D)
   endif()
 
   set(GCOMPRIS_OTHER_LIBS)
@@ -194,6 +187,29 @@ if(BUILD_STANDALONE)
   set(_qml_subdir QtGraphicalEffects)
   getQtQmlPath(_qt_qml_path)
   install(DIRECTORY ${_qt_qml_path}/QtGraphicalEffects DESTINATION ${_qt_qml_destdir})
+
+  # Fix for Linux 'make package' that fails to link with libicu
+  if(UNIX AND NOT APPLE AND NOT SAILFISHOS AND NOT ANDROID)
+    add_library( libicudata SHARED IMPORTED )
+    FILE(GLOB LIBICUDATA_SO "${Qt5_DIR}/../../libicudata.so.[0-9][0-9]")
+    if ("${LIBICUDATA_SO}" STREQUAL "")
+      FILE(GLOB LIBICUDATA_SO "/usr/lib/*/libicudata.so.[0-9][0-9]")
+    endif()
+    set_target_properties( libicudata PROPERTIES IMPORTED_LOCATION ${LIBICUDATA_SO} )
+    add_library( libicui18n SHARED IMPORTED )
+    FILE(GLOB LIBICUI18N_SO "${Qt5_DIR}/../../libicui18n.so.[0-9][0-9]")
+    if ("${LIBICUI18N_SO}" STREQUAL "")
+      FILE(GLOB LIBICUI18N_SO "/usr/lib/*/libicui18n.so.[0-9][0-9]")
+    endif()
+    set_target_properties( libicui18n PROPERTIES IMPORTED_LOCATION ${LIBICUI18N_SO} )
+    add_library( libicuuc SHARED IMPORTED )
+    FILE(GLOB LIBICUUC_SO "${Qt5_DIR}/../../libicuuc.so.[0-9][0-9]")
+    if ("${LIBICUUC_SO}" STREQUAL "")
+      FILE(GLOB LIBICUUC_SO "/usr/lib/*/libicuuc.so.[0-9][0-9]")
+    endif()
+    set_target_properties( libicuuc PROPERTIES IMPORTED_LOCATION ${LIBICUUC_SO} )
+    TARGET_LINK_LIBRARIES(${GCOMPRIS_EXECUTABLE_NAME} libicudata libicui18n libicuuc)
+  endif()
 endif(BUILD_STANDALONE)
 
 # Hack: do not fixup Qt and Qml plugins on Windows because fixup_bundle takes ages (cmake bug ?) -> Johnny : we need this even if it takes time because some required dependencies are pulled here
@@ -210,10 +226,23 @@ if(BUILD_STANDALONE)
   endif()
 endif()
 
+if(WIN32 AND NOT MINGW)
+# install libEGL.dll, libGLESv2.dll, d3dcompiler_47.dll from Qt installation. Not sure if there is a clean way to get them...
+# Qt5_Dir is like C:/Qt/Qt5.5.1/5.5/mingw492_32/lib/cmake/Qt5
+    install(FILES ${Qt5_DIR}/../../../bin/libEGL.dll DESTINATION bin)
+    install(FILES ${Qt5_DIR}/../../../bin/libGLESv2.dll DESTINATION bin)
+    install(FILES ${Qt5_DIR}/../../../bin/d3dcompiler_47.dll DESTINATION bin)
+    target_link_libraries(${GCOMPRIS_EXECUTABLE_NAME} ${Qt5_DIR}/../../libEGL.lib)
+    target_link_libraries(${GCOMPRIS_EXECUTABLE_NAME} ${Qt5_DIR}/../../libGLESv2.lib)
+    install(FILES ${Qt5_DIR}/../../../bin/opengl32sw.dll DESTINATION bin)
+    # CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS contains visual c++ libraries
+    install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION bin)
+endif()
+  
 # Packaging
 # =========
 
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "GCompris is a high quality educational software suite comprising of numerous activities for children aged 2 to 10.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "GCompris is a high quality educational software suite, including a large number of activities for children aged 2 to 10.")
 set(CPACK_PACKAGE_VERSION_MAJOR ${GCOMPRIS_MAJOR_VERSION})
 set(CPACK_PACKAGE_VERSION_MINOR ${GCOMPRIS_MINOR_VERSION})
 set(CPACK_PACKAGE_VERSION_PATCH ${GCOMPRIS_PATCH_VERSION})
@@ -222,11 +251,17 @@ set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYING")
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README")
 
 if(WIN32)
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "${GCOMPRIS_EXECUTABLE_NAME}-Qt")
+  set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${GCOMPRIS_EXECUTABLE_NAME}-Qt")
   set(CPACK_PACKAGE_ICON "${PROJECT_SOURCE_DIR}/installer\\\\gcompris-header.bmp")
   set(CPACK_NSIS_MUI_ICON "${PROJECT_SOURCE_DIR}/installer\\\\GCompris-install.ico")
   set(CPACK_NSIS_MUI_UNIICON "${PROJECT_SOURCE_DIR}/installer\\\\GCompris-uninstall.ico")
   set(CPACK_NSIS_EXECUTABLES_DIRECTORY "bin")
-  set(CPACK_PACKAGE_EXECUTABLES "${GCOMPRIS_EXECUTABLE_NAME}" "${GCOMPRIS_EXECUTABLE_NAME}")
+  set(CPACK_PACKAGE_EXECUTABLES "${GCOMPRIS_EXECUTABLE_NAME};GCompris")
+  set(CPACK_CREATE_DESKTOP_LINKS "${GCOMPRIS_EXECUTABLE_NAME};GCompris")
+  set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\gcompris.net")
+  set(CPACK_NSIS_DISPLAY_NAME "GCompris Educational Software")
+  set(CPACK_NSIS_MUI_FINISHPAGE_RUN "${GCOMPRIS_EXECUTABLE_NAME}")
 else(WIN32)
   set(CPACK_PACKAGE_ICON "${PROJECT_SOURCE_DIR}/GCompris64.png")
 endif()

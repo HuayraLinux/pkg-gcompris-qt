@@ -19,14 +19,14 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "../../core"
 import "guessnumber.js" as Activity
 
 Rectangle {
     id: answerBackground
-    width: 100 * ApplicationInfo.ratio
+    width: hiddentext.width * 1.2
     height: 60 * ApplicationInfo.ratio
     color: activeFocus ? "#ff07fff2" : "#cccccccc"
     radius: 10
@@ -56,9 +56,16 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         text: answerBackground.userEntry
         color: "black"
-        fontSize: 28
+        fontSize: largeSize
         style: Text.Outline
         styleColor: "white"
+    }
+
+    GCText {
+        id: hiddentext
+        opacity: 0
+        fontSize: userEntryText.fontSize
+        text: items.currentMax
     }
 
     onUserEntryChanged: {

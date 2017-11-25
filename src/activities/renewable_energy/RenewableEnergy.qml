@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "../../core"
 
@@ -30,6 +30,7 @@ ActivityBase {
     onStop: {}
 
     property string url: "qrc:/gcompris/src/activities/renewable_energy/resource/"
+    property variant barAtStart
 
     property int oldWidth: width
     onWidthChanged: {
@@ -70,8 +71,12 @@ ActivityBase {
             property bool hasWon: false
         }
 
-        onStart: { }
+        onStart: {
+            barAtStart = ApplicationSettings.isBarHidden;
+            ApplicationSettings.isBarHidden = true;
+        }
         onStop: {
+            ApplicationSettings.isBarHidden = barAtStart;
             initLevel()
         }
 
@@ -154,7 +159,7 @@ ActivityBase {
                 message.opacity = 0
             }
             intro: [
-                qsTr("Tux has come back from a long fishing party on his boat. " +
+                qsTr("Tux has come back from fishing on his boat. " +
                      "Bring the electrical system back up so he can have light in his home."),
                 qsTr("Click on different active elements : sun, cloud, dam, solar array, " +
                      "wind farm and transformers, in order to reactivate the entire electrical system."),
@@ -314,7 +319,8 @@ ActivityBase {
                 radius: 5
                 color: items.consumeColor
                 anchors {
-                    top: parent.bottom
+                    top: parent.top
+                    topMargin: parent.height * 0.1
                     left: parent.right
                 }
                 GCText {

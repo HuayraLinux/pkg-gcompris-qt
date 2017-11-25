@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "../../core"
 import "babymatch.js" as Activity
@@ -31,11 +31,11 @@ Item {
     z: 10
 
     property bool vert
-    property alias model: mymodel;
-    property alias view: view;
-    property alias showOk : showOk
-    property alias hideOk : hideOk
-    property alias repeater : repeater
+    property alias model: mymodel
+    property alias view: view
+    property alias showOk: showOk
+    property alias hideOk: hideOk
+    property alias repeater: repeater
 
     ListModel {
         id: mymodel
@@ -52,7 +52,6 @@ Item {
             view.okShowed = true
             instruction.show()
         }
-
     }
     PropertyAnimation {
         id: hideOk
@@ -92,7 +91,7 @@ Item {
                 parent.height / iconSize - 2 :
                 parent.width / iconSize - 2
 
-        property int nbDisplayedGroup: Math.ceil(model.count / nbItemsByGroup)
+        property int nbDisplayedGroup: nbItemsByGroup > 0 ? Math.ceil(model.count / nbItemsByGroup) : 0
         property int iconSize: 80 * ApplicationInfo.ratio
         property int previousNavigation: 1
         property int nextNavigation: 1
@@ -100,6 +99,8 @@ Item {
         property bool showGlow: false
         property var displayedGroup: []
         property alias ok: ok
+
+        onNbDisplayedGroupChanged: correctDisplayedGroup()
         
         add: Transition {
             NumberAnimation { property: "opacity"; from: 0; to: 1.0; duration: 400 }
@@ -108,6 +109,27 @@ Item {
 
         move: Transition {
             NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutBounce }
+        }
+
+        // For correcting values of Displayed Groups when height or width is changed
+        function correctDisplayedGroup() {
+            if (nbDisplayedGroup > 0) {
+                for(var i = 0 ; i < nbDisplayedGroup ; i++) {
+                    var groupEmpty = true
+                    for(var j = 0 ; j < nbItemsByGroup, i*nbItemsByGroup + j < model.count ; j++) {
+                        if (repeater.itemAt(i*nbItemsByGroup + j).dropStatus < 0) {
+                            groupEmpty = false
+                            break
+                        }
+                    }
+                    if (groupEmpty)
+                        displayedGroup[i] = false
+                    else
+                        displayedGroup[i] = true
+                }
+                view.refreshLeftWidget()
+                view.checkDisplayedGroup()
+            }
         }
 
         //For setting navigation buttons
@@ -141,7 +163,7 @@ Item {
                 }
                 i++
             }
-            
+
             if (groupEmpty) {
                 displayedGroup[currentDisplayedGroup] = false
                 previousNavigation = 0
@@ -155,7 +177,7 @@ Item {
                 }
             }
         }
-        
+
         function refreshLeftWidget() {
             availablePieces.view.currentDisplayedGroup = availablePieces.view.setCurrentDisplayedGroup
             availablePieces.view.setNextNavigation()
@@ -206,7 +228,7 @@ Item {
 
                 onPressed: repeater.currentIndex = index
             }
-            
+
             clip: true
             model: mymodel
 
@@ -215,7 +237,7 @@ Item {
 
         Row {
             spacing: view.iconSize * 0.20
-            
+
             Image {
                 id: previous
                 opacity: (model.count > view.nbItemsByGroup &&
@@ -224,7 +246,7 @@ Item {
                 sourceSize.width: view.iconSize * 0.35
                 fillMode: Image.PreserveAspectFit
                 MouseArea {
-                    anchors.fill: parent                    
+                    anchors.fill: parent
                     onClicked: {
                         repeater.currentIndex = -1
                         if(previous.opacity == 1) {
@@ -234,7 +256,7 @@ Item {
                     }
                 }
             }
-            
+
             Image {
                 id: next
                 visible: model.count > view.nbItemsByGroup && view.nextNavigation != 0 && view.currentDisplayedGroup < 

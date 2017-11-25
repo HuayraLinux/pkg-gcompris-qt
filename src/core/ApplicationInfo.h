@@ -27,13 +27,13 @@
 #include <config.h>
 #include "ApplicationSettings.h"
 
-#include <qqml.h>
-#include <QtCore/QObject>
-#include <QtQml/QQmlPropertyMap>
+#include <QObject>
+#include <QQmlPropertyMap>
 #include <QQmlEngine>
 #include <QtGlobal>
 
 class QQuickWindow;
+
 
 /**
  * @class ApplicationInfo
@@ -117,6 +117,11 @@ class ApplicationInfo : public QObject
 	Q_PROPERTY(QString GCVersion READ GCVersion CONSTANT)
 
     /**
+     * GCompris version code (compile time).
+     */
+	Q_PROPERTY(int GCVersionCode READ GCVersionCode CONSTANT)
+
+    /**
      * Qt version string (runtime).
      */
 	Q_PROPERTY(QString QTVersion READ QTVersion CONSTANT)
@@ -137,6 +142,13 @@ class ApplicationInfo : public QObject
      */
     Q_PROPERTY(bool isDownloadAllowed READ isDownloadAllowed CONSTANT)
 
+    /**
+     * Whether the application is currently using OpenGL or not.
+     *
+     * Use to deactivate some effects if OpenGL not used.
+     */
+	Q_PROPERTY(bool useOpenGL READ useOpenGL CONSTANT)
+        
 public:
 
 	/**
@@ -218,6 +230,32 @@ public:
      */
     Q_INVOKABLE QString getSharedWritablePath() const;
 
+    /**
+     * Compare two strings respecting locale specific sort order.
+     *
+     * @param a         First string to compare
+     * @param b         Second string to compare
+     * @param locale    Locale to respect for comparison in any of the forms
+     *                  used in GCompris xx[_XX][.codeset]. Defaults to currently
+     *                  set language from global configuration.
+     * @returns         -1, 0 or 1 if a is less than, equal to or greater than b
+     */
+    Q_INVOKABLE int localeCompare(const QString& a, const QString& b, const QString& locale = "") const;
+
+    /**
+     * Sort a list of strings respecting locale specific sort order.
+     *
+     * This function is supposed to be called from QML/JS. As there are still
+     * problems marshalling QStringList from C++ to QML/JS we use QVariantList
+     * both for argument and return value.
+     *
+     * @param list      List of strings to be sorted.
+     * @param locale    Locale to respect for sorting in any of the forms
+     *                  used in GCompris xx[_XX][.codeset].
+     * @returns         List sorted by the sort order of the passed locale.
+     */
+    Q_INVOKABLE QVariantList localeSort(QVariantList list, const QString& locale = "") const;
+
     /// @cond INTERNAL_DOCS
 
     static ApplicationInfo *getInstance() {
@@ -237,16 +275,30 @@ public:
 	bool isPortraitMode() const { return m_isPortraitMode; }
 	void setIsPortraitMode(const bool newMode);
     bool isMobile() const { return m_isMobile; }
-    bool hasShader() const { return false; }
+    bool hasShader() const {
+#if defined(Q_OS_ANDROID)
+        return false;
+#else
+        return true;
+#endif
+    }
 	qreal ratio() const { return m_ratio; }
     qreal fontRatio() const { return m_fontRatio; }
     QString localeShort() const {
         return localeShort( ApplicationSettings::getInstance()->locale() );
     }
     static QString GCVersion() { return VERSION; }
+    static int GCVersionCode() { return VERSION_CODE; }
     static QString QTVersion() { return qVersion(); }
     static QString CompressedAudio() { return COMPRESSED_AUDIO; }
     static bool isDownloadAllowed() { return QString(DOWNLOAD_ALLOWED) == "ON"; }
+    static bool useOpenGL() { 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+        return QString(GRAPHICAL_RENDERER) != "software"; 
+#else
+        return true;
+#endif
+    }
 
     /**
      * Returns the native screen orientation.

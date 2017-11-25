@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "babymatch.js" as Activity
 
@@ -29,8 +29,6 @@ Rectangle {
     property string text
     property double posX
     property double posY
-    property double imgHeight
-    property double imgWidth
     property string imgName
     property double xCenter: x + width / 2
     property double yCenter: y + height / 2
@@ -54,21 +52,16 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
         anchors.centerIn: parent
         z : -1
-
-        onSourceChanged: console.log('targetImage', source)
     }
 
     function imageRemove() {
-        console.log('imageRemove')
         if(currentTileImageItem)
             currentTileImageItem.imageRemove()
         currentTileImageItem = null
     }
 
     function imageAdd(tileImageItem) {
-        console.log('imageAdd')
         currentTileImageItem = tileImageItem
-        console.log('imageAdd=', currentTileImageItem.source)
         dropCircle.color = dropCircleColor
     }
 

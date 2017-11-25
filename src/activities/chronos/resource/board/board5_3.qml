@@ -19,31 +19,31 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 
 QtObject {
    property string instruction: qsTr("Transportation")
    property variant levels: [
       {
-          "pixmapfile": "images/celerifere.png",
+          "pixmapfile": "images/celerifere.svg",
           "x": "0.2",
           "y": "0.55",
           "width": 0.4,
-          "height": 0.4
+          "height": 0.406
       },
       {
-          "pixmapfile": "images/mongolfiere.png",
-          "x": "0.5",
-          "y": "0.9",
+          "pixmapfile": "images/mongolfiere.svg",
+          "x": 0.5,
+          "y": 0.9,
           "width": 0.4,
-          "height": 0.2
+          "height": 0.522
       },
       {
-          "pixmapfile": "images/st_rocket.png",
-          "x": "0.75",
-          "y": "0.55",
+          "pixmapfile": "images/st_rocket.svg",
+          "x": 0.75,
+          "y": 0.55,
           "width": 0.4,
-          "height": 0.4
+          "height": 0.308
       },
       {
 		  "text": qsTr("1791 Comte de Sivrac's Celerifere"),

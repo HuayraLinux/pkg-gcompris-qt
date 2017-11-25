@@ -1,4 +1,4 @@
-/* GCompris - DropAnswerItem.qml
+/* GCompris - TextItem.qml
  *
  * Copyright (C) 2015 Pulkit Gupta <pulkitgenius@gmail.com>
  *
@@ -18,22 +18,21 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "../../core"
-import "babymatch.js" as Activity
 
 Item {
     id: displayText
-    
+
     property double posX
     property double posY
     property double textWidth
     property string showText
-    
+
     x: posX * parent.width
     y: posY * parent.height
-    
+
     GCText {
         id: displayTxt
         anchors {

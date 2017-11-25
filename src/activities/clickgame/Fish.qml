@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import QtQuick.Particles 2.0
 import "clickgame.js" as Activity
 import "../../core"
@@ -74,16 +74,15 @@ AnimatedSprite {
             rotateLeftAnimation.start()
             targetX = 0
             x = targetX
+            var barHeight = ApplicationSettings.isBarHidden ? bar.height / 2 : bar.height
             y = Activity.currentLevel > 0
-                    ? bar.height + Math.random() * (background.height - bar.height - fish.height)
+                    ? Math.random() * (background.height - barHeight - fish.height)
                     : y
-            bubbleEffect.restart()
         } else if(x == 0 && rotate.angle == 180) {
             rotateRightAnimation.start()
             targetX = background.width - fish.width
             x = targetX
-            bubbleEffect.restart()
-        }
+       }
     }
     Behavior on x { PropertyAnimation { duration: fish.duration } }
     Behavior on y { PropertyAnimation { duration: fish.duration } }
@@ -104,10 +103,6 @@ AnimatedSprite {
         id: bubbleEffect
         anchors.fill: parent
         active: ApplicationInfo.hasShader
-        function restart() {
-            if(active)
-                item.restart()
-        }
         sourceComponent: ParticleSystem {
             anchors.fill: parent
             Emitter {

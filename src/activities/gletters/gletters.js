@@ -1,6 +1,6 @@
 /* GCompris - gletters.js
  *
- * Copyright (C) 2014 Holger Kaelberer
+ * Copyright (C) 2014-2016 Holger Kaelberer
  *
  * Authors:
  *   Bruno Coudoin <bruno.coudoin@gcompris.net> (GTK+ version)
@@ -22,11 +22,10 @@
 
 /* ToDo / open issues:
  * - adjust wordlist filenames once we have an ApplicationInfo.dataPath() or so
- * - make uppercaseOnly be taken from (activity-) settings
  */
 
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 .import GCompris 1.0 as GCompris //for ApplicationInfo
 .import "qrc:/gcompris/src/core/core.js" as Core
 
@@ -167,7 +166,7 @@ function initLevel() {
                 }
             }
         }
-        letters.sort();
+        letters = GCompris.ApplicationInfo.localeSort(letters, items.locale);
         // generate layout from letter map
         var layout = new Array();
         var row = 0;

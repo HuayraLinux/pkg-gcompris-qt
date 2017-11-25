@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -33,6 +33,7 @@ ActivityBase {
     onStop: {}
 
     property string url: "qrc:/gcompris/src/activities/watercycle/resource/"
+    property variant barAtStart
 
     pageComponent: Item {
         id: background
@@ -47,8 +48,14 @@ ActivityBase {
         }
 
         onStart: {
+            barAtStart = ApplicationSettings.isBarHidden;
+            ApplicationSettings.isBarHidden = true;
             shower.hide()
             river.level = 0
+        }
+
+        onStop: {
+            ApplicationSettings.isBarHidden = barAtStart;
         }
 
         QtObject {
@@ -57,7 +64,7 @@ ActivityBase {
                 "none": "",
                 "start": qsTr("Sun is the main component of water cycle. Click on the sun to start the water cycle."),
                 "sun": qsTr("As the sun rises, the water of the sea starts heating and evaporates."),
-                "cloud": qsTr(" Water vapor condenses to form cloud and when clouds become heavy, they rain. Click on the cloud."),
+                "cloud": qsTr(" Water vapor condenses to form cloud and when clouds become heavy, it rains. Click on the cloud."),
                 "rain": qsTr("Rain causes rivers to swell up and this water is transported to us via motor pumps through water-tower." +
                              " Click on the motor pump to supply water to residents."),
                 "tower": qsTr("See the tower filled with water. Activate the sewage treatment station by clicking on it."),

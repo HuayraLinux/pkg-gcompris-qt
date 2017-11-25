@@ -19,7 +19,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "."
 
@@ -40,13 +40,13 @@ ActivityBase {
         signal stop
         fillMode: Image.PreserveAspectCrop
         source: Activity.url + "background.svg"
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
 
         Component.onCompleted: {
             activity.start.connect(start)
             activity.stop.connect(stop)
         }
-        onStart: { Activity.start(items) }
+        onStart: { Activity.start(items); keyboard.populate(); }
         onStop: { Activity.stop() }
 
         Keys.onDownPressed: {
@@ -75,6 +75,13 @@ ActivityBase {
             anchors.bottom: background.bottom
             width: background.width
             height: background.height
+        }
+
+        Image {
+            source: Activity.url + 'turtle.svg'
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectFit
+            sourceSize.width: Math.max(parent.width, parent.height)
         }
 
         Column {
@@ -131,7 +138,8 @@ ActivityBase {
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
 
-            layout: [ [
+            function populate() {
+                layout = [ [
                     { label: "0" },
                     { label: "1" },
                     { label: "2" },
@@ -144,6 +152,8 @@ ActivityBase {
                     { label: "9" },
                     { label: keyboard.backspace }
                 ] ]
+            }
+
             onKeypress: Activity.currentAnswerItem.appendText(text)
 
             onError: console.log("VirtualKeyboard error: " + msg);

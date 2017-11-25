@@ -19,8 +19,8 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 #include <QtDebug>
-#include <QtGui/QGuiApplication>
-#include <QtQuick/QQuickWindow>
+#include <QApplication>
+#include <QQuickWindow>
 #include <QQmlApplicationEngine>
 #include <QStandardPaths>
 #include <QObject>
@@ -33,6 +33,7 @@
 #include "ApplicationInfo.h"
 #include "ActivityInfoTree.h"
 #include "File.h"
+#include "Directory.h"
 #include "DownloadManager.h"
 
 bool loadAndroidTranslation(QTranslator &translator, const QString &locale)
@@ -71,8 +72,8 @@ QString loadTranslation(QSettings &config, QTranslator &translator)
     if(locale == GC_DEFAULT_LOCALE)
         locale = QString(QLocale::system().name() + ".UTF-8");
 
-    if(locale == "C.UTF-8")
-        locale = "en_US.UTF-8";
+    if(locale == "C.UTF-8" || locale == "en_US.UTF-8")
+        return "en_US";
 
     // Load translation
     // Remove .UTF8
@@ -108,7 +109,15 @@ int main(int argc, char *argv[])
     // Disable it because we already support HDPI display natively
     qunsetenv("QT_DEVICE_PIXEL_RATIO");
 
-    QGuiApplication app(argc, argv);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+    QString renderer = QString(GRAPHICAL_RENDERER);
+    if(renderer == "software")
+       QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Software);
+    else if(renderer == "opengl")
+       QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
+#endif
+    
+    QApplication app(argc, argv);
     app.setOrganizationName("KDE");
     app.setApplicationName(GCOMPRIS_APPLICATION_NAME);
     app.setOrganizationDomain("kde.org");
@@ -158,20 +167,21 @@ int main(int argc, char *argv[])
     QCommandLineOption clMute(QStringList() << "m" << "mute",
                                        QObject::tr("Run GCompris without sound."));
     parser.addOption(clMute);
-    QCommandLineOption clWithoutConfig(QStringList() << "disable-config",
-                                       QObject::tr("Disable the configuration button."));
-    parser.addOption(clWithoutConfig);
-    QCommandLineOption clWithConfig(QStringList() << "enable-config",
-                                       QObject::tr("Enable the configuration button (default)."));
-    parser.addOption(clWithConfig);
+    QCommandLineOption clWithoutKioskMode(QStringList() << "disable-kioskmode",
+                                       QObject::tr("Disable the kiosk mode (default)."));
+    parser.addOption(clWithoutKioskMode);
+    QCommandLineOption clWithKioskMode(QStringList() << "enable-kioskmode",
+                                       QObject::tr("Enable the kiosk mode."));
+    parser.addOption(clWithKioskMode);
     parser.process(app);
 
 
     ApplicationInfo::init();
-	ActivityInfoTree::init();
+    ActivityInfoTree::init();
     ApplicationSettings::init();
-	File::init();
-	DownloadManager::init();
+    File::init();
+    Directory::init();
+    DownloadManager::init();
 
     // Tell media players to stop playing, it's GCompris time
     ApplicationInfo::getInstance()->requestAudioFocus();
@@ -210,12 +220,6 @@ int main(int argc, char *argv[])
     // Update execution counter
     ApplicationSettings::getInstance()->setExeCount(ApplicationSettings::getInstance()->exeCount() + 1);
 
-    // Register voices-resources for current locale, updates/downloads only if
-    // not prohibited by the settings
-    if(!DownloadManager::getInstance()->areVoicesRegistered())
-        DownloadManager::getInstance()->updateResource(DownloadManager::getInstance()
-            ->getVoicesResourceForLocale(locale));
-
     if(parser.isSet(clFullscreen)) {
         isFullscreen = true;
     }
@@ -230,16 +234,16 @@ int main(int argc, char *argv[])
         ApplicationSettings::getInstance()->setIsAudioEffectsEnabled(true);
         ApplicationSettings::getInstance()->setIsAudioVoicesEnabled(true);
     }
-    if(parser.isSet(clWithConfig)) {
+    if(parser.isSet(clWithoutKioskMode)) {
         ApplicationSettings::getInstance()->setKioskMode(false);
     }
-    if(parser.isSet(clWithoutConfig)) {
+    if(parser.isSet(clWithKioskMode)) {
         ApplicationSettings::getInstance()->setKioskMode(true);
     }
 
     QQmlApplicationEngine engine(QUrl("qrc:/gcompris/src/core/main.qml"));
-    QObject::connect(&engine, SIGNAL(quit()), DownloadManager::getInstance(),
-                     SLOT(shutdown()));
+    QObject::connect(&engine, &QQmlApplicationEngine::quit, DownloadManager::getInstance(),
+                     &DownloadManager::shutdown);
     // add import path for shipped qml modules:
 #ifdef SAILFISHOS
     engine.addImportPath(QStringLiteral("%1/../share/%2/lib/qml")
@@ -274,6 +278,5 @@ int main(int argc, char *argv[])
         window->show();
     }
 
-	return app.exec();
-
+    return app.exec();
 }

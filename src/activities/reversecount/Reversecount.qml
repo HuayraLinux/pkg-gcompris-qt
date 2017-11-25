@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -179,11 +179,12 @@ ActivityBase {
                 margins: 10
             }
             sourceSize.width: 66 * bar.barZoom
-            property int remainingife: items.clockPosition
-            onRemainingifeChanged: clockAnim.start()
+            property int remainingLife: items.clockPosition
+            onRemainingLifeChanged: if(remainingLife >= 0) clockAnim.restart()
 
             SequentialAnimation {
                 id: clockAnim
+                alwaysRunToEnd: true
                 ParallelAnimation {
                     NumberAnimation {
                         target: clock; properties: "opacity";
@@ -211,7 +212,6 @@ ActivityBase {
                 }
             }
         }
-
 
         ChooseDiceBar {
             id: chooseDiceBar

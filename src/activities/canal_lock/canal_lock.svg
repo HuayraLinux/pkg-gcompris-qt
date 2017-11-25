@@ -71,23 +71,6 @@
        id="linearGradient4503-2"
        xlink:href="#linearGradient4497"
        inkscape:collect="always" />
-    <linearGradient
-       y2="440.09"
-       x2="484.17999"
-       gradientTransform="matrix(1,0,0,1.1495,0,-225.41)"
-       y1="222.09"
-       gradientUnits="userSpaceOnUse"
-       x1="480"
-       id="skyG">
-      <stop
-         offset="0"
-         id="stop4428"
-         style="stop-color:#3cc1f1;stop-opacity:1" />
-      <stop
-         offset="1"
-         id="stop4430"
-         style="stop-color:#85d8f6;stop-opacity:1" />
-    </linearGradient>
   </defs>
   <metadata
      id="metadata7">
@@ -98,7 +81,30 @@
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <dc:title></dc:title>
+        <dc:date>2015</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Timothée Giet</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
       </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
     </rdf:RDF>
   </metadata>
   <g

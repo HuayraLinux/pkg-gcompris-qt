@@ -18,8 +18,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
-import QtQuick.Controls 1.0
+import QtQuick 2.6
+import QtQuick.Controls 1.5
 import GCompris 1.0
 
 /**
@@ -105,6 +105,8 @@ Item {
     Behavior on opacity { NumberAnimation { duration: 200 } }
     onOpacityChanged: opacity === 0 ? close() : null
 
+    z: 1500
+
     Rectangle {
         anchors.fill: parent
         opacity: 0.8
@@ -163,13 +165,8 @@ Item {
                     textFormat: TextEdit.RichText
                     z: 2
                     text: style + "<body>" + textIn + "</body>"
-                    Component.onCompleted: ApplicationInfo.isDownloadAllowed ?
-                                               linkActivated.connect(Qt.openUrlExternally) : null
-
                     property string textIn
-                    property string style: ApplicationInfo.isDownloadAllowed ?
-                                               "<HEAD><STYLE type='text/css'>A {color: blue;}</STYLE></HEAD>" :
-                                               "<HEAD><STYLE type='text/css'>A {color: black;}</STYLE></HEAD>"
+                    property string style: "<HEAD><STYLE type='text/css'>A {color: black;}</STYLE></HEAD>"
                 }
             }
         }
@@ -177,13 +174,14 @@ Item {
         Button {
             id: button1
             width: parent.width
-            height: 60 * ApplicationInfo.ratio
+            height: (visible ? 60 : 30) * ApplicationInfo.ratio
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top: instructionTxtBg.bottom
                 topMargin: 10
             }
             style: GCButtonStyle {
+                theme: "highContrast"
             }
             visible: text != ""
             onClicked: {
@@ -195,13 +193,14 @@ Item {
         Button {
             id: button2
             width: parent.width
-            height: 60 * ApplicationInfo.ratio
+            height: (visible ? 60 : 30) * ApplicationInfo.ratio
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top: button1.bottom
                 topMargin: 10
             }
             style: GCButtonStyle {
+                theme: "highContrast"
             }
             visible: text != ""
             onClicked: {

@@ -16,7 +16,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -35,14 +35,13 @@ ActivityBase {
         id: background
         source: "qrc:/gcompris/src/activities/algebra_by/resource/background.svg"
         fillMode: Image.PreserveAspectCrop
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         signal start
         signal stop
 
         Component.onCompleted: {
             activity.start.connect(start)
             activity.stop.connect(stop)
-
         }
 
         Item {
@@ -167,7 +166,7 @@ ActivityBase {
         }
     }
     Keys.onPressed: {
-        numpad.updateAnswer(event.key,true);
+        numpad.updateAnswer(event.key, true);
     }
 
     Keys.onReleased: {

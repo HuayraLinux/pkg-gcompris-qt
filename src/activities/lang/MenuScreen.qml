@@ -20,10 +20,11 @@
 *
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
-*/import QtQuick 2.1
+*/
+import QtQuick 2.6
 import GCompris 1.0
 import QtGraphicalEffects 1.0
-import QtQuick.Controls 1.2
+import QtQuick.Controls 1.5
 
 import "../../core"
 import "lang.js" as Activity
@@ -33,7 +34,7 @@ Image {
     anchors.fill: parent
     fillMode: Image.PreserveAspectCrop
     source: Activity.baseUrl + "imageid-bg.svg"
-    sourceSize.width: parent.width
+    sourceSize.width: Math.max(parent.width, parent.height)
     opacity: 0
 
     property alias menuModel: menuModel
@@ -107,7 +108,6 @@ Image {
 
     GridView {
         id: menuGrid
-        layer.enabled: true
 
         anchors {
             fill: parent
@@ -137,7 +137,7 @@ Image {
             }
             Image {
                 id: containerImage
-                source: "qrc:/gcompris/data/"+ image;
+                source: image;
                 anchors.top: activityBackground.top
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: iconWidth
@@ -178,7 +178,7 @@ Image {
             }
             MouseArea {
                 anchors.fill: activityBackground
-                enabled: menuScreen.opacity == 1
+                enabled: menuScreen.started
                 onClicked: selectCurrentItem()
             }
 
@@ -218,7 +218,7 @@ Image {
             Behavior on x { SpringAnimation { spring: 2; damping: 0.2 } }
             Behavior on y { SpringAnimation { spring: 2; damping: 0.2 } }
         }
-
+        
         Rectangle{
             id: menusMask
             visible: false
@@ -230,6 +230,7 @@ Image {
             }
         }
 
+        layer.enabled: ApplicationInfo.useOpenGL
         layer.effect: OpacityMask {
             id: activitiesOpacity
             source: menuGrid

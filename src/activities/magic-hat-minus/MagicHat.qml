@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -38,15 +38,15 @@ ActivityBase {
         id: background
         anchors.fill: parent
         source: Activity.url + "background.svg"
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         fillMode: Image.PreserveAspectCrop
         property int starSize: Math.min(rightLayout.width / 12,
                                         background.height / 16)
         signal start
         signal stop
 
-        property var starColors : ["yellow", "red", "blue"]
-
+        property var starColors : ["1", "2", "3"]
+        
         Component.onCompleted: {
             activity.start.connect(start)
             activity.stop.connect(stop)
@@ -187,7 +187,7 @@ ActivityBase {
                         barGroupIndex: 2
                         barIndex: index
                         width: rightLayout.width
-                        backgroundColor: "#CCDDFFAA"
+                        backgroundColor: "#53b9c9"
                         starsColor: starColors[index]
                         authorizeClick: false
                         theHat: items.hat

@@ -21,7 +21,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import QtGraphicalEffects 1.0
 
@@ -40,11 +40,9 @@ ActivityBase {
         id: background
         source: "qrc:/gcompris/src/activities/lang/resource/imageid-bg.svg"
         fillMode: Image.PreserveAspectCrop
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
 
-        readonly property string wordsResource: "data2/words/words.rcc"
         property bool englishFallback: false
-        property bool downloadWordsNeeded: false
 
         signal start
         signal stop
@@ -74,39 +72,15 @@ ActivityBase {
             property variant categoriesTranslations: activity.categoriesTranslations
         }
 
-        function handleResourceRegistered(resource)
-        {
-            if (resource == wordsResource)
-                Activity.start();
-        }
-
         onStart: {
             Activity.init(items)
             dialogActivityConfig.getInitialConfiguration()
-
             activity.audioVoices.error.connect(voiceError)
             activity.audioVoices.done.connect(voiceDone)
-
-            // check for words.rcc:
-            if (DownloadManager.isDataRegistered("words")) {
-                // words.rcc is already registered -> start right away
-                Activity.start();
-            } else if(DownloadManager.haveLocalResource(wordsResource)) {
-                // words.rcc is there -> register old file first
-                if (DownloadManager.registerResource(wordsResource))
-                    Activity.start(items);
-                else // could not register the old data -> react to a possible update
-                    DownloadManager.resourceRegistered.connect(handleResourceRegistered);
-                // then try to update in the background
-                DownloadManager.updateResource(wordsResource);
-            } else {
-                // words.rcc has not been downloaded yet -> ask for download
-                downloadWordsNeeded = true
-            }
+            Activity.start()
         }
 
         onStop: {
-            DownloadManager.resourceRegistered.disconnect(handleResourceRegistered);
             dialogActivityConfig.saveDatainConfiguration()
             Activity.stop()
         }
@@ -132,15 +106,14 @@ ActivityBase {
         Bar {
             id: bar
             anchors.bottom: keyboardArea.top
-            content: BarEnumContent { value:
-                    menuScreen.started ? help | home | config
-                                       : help | home }
+            content: menuScreen.started ? withConfig : withoutConfig
+            property BarEnumContent withConfig: BarEnumContent { value: help | home | config }
+            property BarEnumContent withoutConfig: BarEnumContent { value: help | home }
             onHelpClicked: {
                 displayDialog(dialogHelp)
             }
             onHomeClicked: {
-                // if we don't have the images, we leave the activity on home()
-                if(DownloadManager.haveLocalResource(wordsResource) && !items.menuScreen.started && !items.imageReview.started)
+                if(!items.menuScreen.started && !items.imageReview.started)
                     // We're in a mini game, start imageReview
                     items.imageReview.start()
                 else if(items.imageReview.started)
@@ -176,25 +149,6 @@ ActivityBase {
             anchors.fill: parent
             focus: true
             active: background.englishFallback
-            onStatusChanged: if (status == Loader.Ready) item.start()
-        }
-
-        Loader {
-            id: downloadWordsDialog
-            sourceComponent: GCDialog {
-                parent: activity.main
-                message: qsTr("The images for this activity are not yet installed.")
-                button1Text: qsTr("Download the images")
-                onClose: background.downloadWordsNeeded = false
-                onButton1Hit: {
-                    DownloadManager.resourceRegistered.connect(handleResourceRegistered);
-                    DownloadManager.downloadResource(wordsResource)
-                    var downloadDialog = Core.showDownloadDialog(activity, {});
-                }
-            }
-            anchors.fill: parent
-            focus: true
-            active: background.downloadWordsNeeded
             onStatusChanged: if (status == Loader.Ready) item.start()
         }
 
@@ -283,7 +237,8 @@ ActivityBase {
         }
     }
 
-    property variant categoriesTranslations: {"other": qsTr("other"),
+    property variant categoriesTranslations: {"otherChapter": qsTr("other"),
+        "otherLesson": qsTr("other"),
         "action": qsTr("action"), "adjective": qsTr("adjective"),
         "color": qsTr("color"), "number": qsTr("number"),
         "people": qsTr("people"), "bodyparts": qsTr("bodyparts"),

@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 import GCompris 1.0
 
 /**
@@ -86,6 +86,13 @@ Item {
                            { label: "b", shiftLabel: "B" },
                            { label: "n", shiftLabel: "N" },
                            { label: "m", shiftLabel: "M" } ]]
+
+
+    /**
+     * type:string
+     * Symbol that can be used for the space key.
+    */
+    readonly property string space: "\u2423"
 
     /**
      * type:string
@@ -217,7 +224,6 @@ Item {
     z: 9999
     width: parent.width
     height: visible ? priv.cHeight : 0
-    anchors.bottom: parent.bottom
     anchors.horizontalCenter: parent.horizontalCenter
 
     property int modifiers: Qt.NoModifier;  // currently active key modifiers, internal only
@@ -232,68 +238,34 @@ Item {
         property bool initialized: false
     }
 
+    WorkerScript {
+        id: keyboardWorker
 
-    function populateKeyboard(a)
-    {
-        var nRows;
-        var maxButtons = 0;
-
-        // validate layout syntax:
-        if (!Array.isArray(a) || a.length < 1) {
-            error("VirtualKeyboard: Invalid layout, array of length > 0");
-            return;
-        }
-        nRows = a.length;
-        // if we need special keys, put them in a separate row at the bottom:
-        if (keyboard.shiftKey) {
-            a.push([ {
-                label     : keyboard.shiftUpSymbol + " Shift",
-                shiftLabel: keyboard.shiftDownSymbol + " Shift",
-                specialKeyValue: Qt.Key_Shift } ]);
-        }
-        var i
-        var seenLabels = [];
-        for (i = 0; i < a.length; i++) {
-            if (!Array.isArray(a[i])) {
-                error("VirtualKeyboard: Invalid layout, expecting array of arrays of keys");
-                return;
-            }
-            if (a[i].length > maxButtons)
-                maxButtons = a[i].length;
-            for (var j = 0; j < a[i].length; j++) {
-                if (undefined === a[i][j].label) {
-                    error("VirtualKeyboard: Invalid layout, invalid key object");
-                    return;
-                }
-                if (undefined === a[i][j].specialKeyValue)
-                    a[i][j].specialKeyValue = 0;
-                var label = a[i][j].label;
-                // if we have a shift key lowercase all labels:
-                if (shiftKey && label == label.toLocaleUpperCase())
-                    label = label.toLocaleLowerCase();
-                // drop duplicates (this alters keyboard layout, though!):
-                if (seenLabels.indexOf(label) !=-1) {
-                    a[i].splice(j, 1);
-                    j--;
-                    continue;
-                }
-                a[i][j].label = label;
-                seenLabels.push(label);
-                if (keyboard.shiftKey && undefined === a[i][j].shiftLabel)
-                    a[i][j].shiftLabel = a[i][j].label.toLocaleUpperCase();
+        source: "virtualkeyboard_worker.js"
+        onMessage: {
+            // worker finished
+            activity.loading.stop();
+            if (messageObject.error !== "") {
+                error(messageObject.error);
+            } else {
+                // update all changed values (except the model):
+                priv.numRows = messageObject.numRows;
+                priv.initialized = messageObject.initialized;
             }
         }
+    }
 
-        // populate
-        for (i = 0; i < a.length; i++) {
-            var row = a[i];
-            var offset = 0;
-            rowListModel.append({ rowNum: i,
-                                  offset: offset,
-                                  keys: row});
-        }
-        priv.numRows = i;
-        priv.initialized = (priv.numRows > 0);
+    function populateKeyboard(a) {
+        if(activity.activityInfo.name != "menu/Menu.qml")
+            activity.loading.start();
+        // populate asynchronously in a worker thread:
+        keyboardWorker.sendMessage({
+                                       shiftKey: keyboard.shiftKey,
+                                       shiftUpSymbol: keyboard.shiftUpSymbol,
+                                       shiftDownSymbol: keyboard.shiftDownSymbol,
+                                       a: a,
+                                       rowListModel: rowListModel
+                                   });
     }
 
     function handleVirtualKeyPress(virtualKey) {
@@ -306,7 +278,6 @@ Item {
     }
 
     onLayoutChanged: {
-        rowListModel.clear();
         priv.initialized = false;
         if (layout != null)
             populateKeyboard(layout);
@@ -334,7 +305,7 @@ Item {
     }
 
     Rectangle {
-        id: background
+        id: keyboardBackground
 
         width: parent.width
         height: keyboard.height
@@ -418,7 +389,7 @@ Item {
                     } // Row
             } // Item
         } // ListView
-    } // background
+    } // keyboardBackground
 
     /// @endcond
 }

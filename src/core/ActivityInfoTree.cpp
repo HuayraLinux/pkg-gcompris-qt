@@ -31,8 +31,8 @@
 
 ActivityInfoTree::ActivityInfoTree(QObject *parent) : QObject(parent),
 	m_currentActivity(NULL)
-{}
-
+{
+}
 
 void ActivityInfoTree::setRootMenu(ActivityInfo *rootMenu)
 {
@@ -117,28 +117,30 @@ void ActivityInfoTree::menuTreeAppend(QQmlEngine *engine,
     }
 }
 
-void ActivityInfoTree::sortByDifficulty()
+void ActivityInfoTree::sortByDifficulty(bool emitChanged)
 {
-    qSort(m_menuTree.begin(), m_menuTree.end(), SortByDifficulty());
-    emit menuTreeChanged();
+    std::sort(m_menuTree.begin(), m_menuTree.end(), SortByDifficulty());
+    if (emitChanged)
+        Q_EMIT menuTreeChanged();
 }
 
-void ActivityInfoTree::sortByName()
+void ActivityInfoTree::sortByName(bool emitChanged)
 {
-    qSort(m_menuTree.begin(), m_menuTree.end(), SortByName());
-    emit menuTreeChanged();
+    std::sort(m_menuTree.begin(), m_menuTree.end(), SortByName());
+    if (emitChanged)
+        Q_EMIT menuTreeChanged();
 }
 
 // Filter the current activity list by the given tag
 // the tag 'all' means no filter
 // the tag 'favorite' means only marked as favorite
 // The level is also filtered based on the global property
-void ActivityInfoTree::filterByTag(const QString &tag)
+void ActivityInfoTree::filterByTag(const QString &tag, bool emitChanged)
 {
     m_menuTree.clear();
-    for(auto activity: m_menuTreeFull) {
+    for(const auto &activity: m_menuTreeFull) {
         if((activity->section().indexOf(tag) != -1 ||
-			tag == "all" ||
+            tag == "all" ||
             (tag == "favorite" && activity->favorite())) &&
             (activity->difficulty() >= ApplicationSettings::getInstance()->filterLevelMin() &&
              activity->difficulty() <= ApplicationSettings::getInstance()->filterLevelMax())) {
@@ -146,10 +148,20 @@ void ActivityInfoTree::filterByTag(const QString &tag)
         }
     }
     sortByDifficulty();
-    emit menuTreeChanged();
+    if (emitChanged)
+        Q_EMIT menuTreeChanged();
 }
 
-void ActivityInfoTree::filterLockedActivities()
+void ActivityInfoTree::filterByDifficulty(int levelMin, int levelMax)
+{
+    auto it = std::remove_if(m_menuTree.begin(), m_menuTree.end(),
+                             [&](const ActivityInfo* activity) {
+                                 return activity->difficulty() < levelMin || activity->difficulty() > levelMax;
+                             });
+    m_menuTree.erase(it, m_menuTree.end());
+}
+
+void ActivityInfoTree::filterLockedActivities(bool emitChanged)
 {
     // If we have the full version or if we show all the activities, we don't need to do anything
     if(!ApplicationSettings::getInstance()->isDemoMode() || ApplicationSettings::getInstance()->showLockedActivities())
@@ -159,15 +171,31 @@ void ActivityInfoTree::filterLockedActivities()
     auto it = std::remove_if(m_menuTree.begin(), m_menuTree.end(),
                              [](const ActivityInfo* activity) { return !activity->demo(); });
     m_menuTree.erase(it, m_menuTree.end());
-    emit menuTreeChanged();
+    if (emitChanged)
+        Q_EMIT menuTreeChanged();
 }
 
-void ActivityInfoTree::filterEnabledActivities()
+void ActivityInfoTree::filterEnabledActivities(bool emitChanged)
 {
     auto it = std::remove_if(m_menuTree.begin(), m_menuTree.end(),
                              [](const ActivityInfo* activity) { return !activity->enabled(); });
     m_menuTree.erase(it, m_menuTree.end());
-    emit menuTreeChanged();
+    if (emitChanged)
+        Q_EMIT menuTreeChanged();
+}
+
+void ActivityInfoTree::filterCreatedWithinVersions(int firstVersion,
+                                                   int lastVersion,
+                                                   bool emitChanged)
+{
+    m_menuTree.clear();
+    for(const auto &activity: m_menuTreeFull) {
+        if(firstVersion < activity->createdInVersion() && activity->createdInVersion() <= lastVersion) {
+            m_menuTree.push_back(activity);
+        }
+    }
+    if (emitChanged)
+        Q_EMIT menuTreeChanged();
 }
 
 void ActivityInfoTree::exportAsSQL()
@@ -195,7 +223,7 @@ void ActivityInfoTree::exportAsSQL()
     cout << "DELETE FROM activities" << endl;
 
     int i(0);
-    for(auto activity: m_menuTree) {
+    for(const auto &activity: m_menuTree) {
         cout << "INSERT INTO activities VALUES(" <<
                 i++ << ", " <<
                 "'" << activity->name() << "', " <<
@@ -265,11 +293,61 @@ void ActivityInfoTree::init()
     if(!QResource::registerResource(ApplicationInfo::getFilePath("activities.rcc")))
         qDebug() << "Failed to load the resource file activities.rcc";
 
-    if(QResource::registerResource(QStandardPaths::writableLocation(QStandardPaths::DataLocation) +
+    if(QResource::registerResource(ApplicationSettings::getInstance()->cachePath() +
                                    "/data2/" + QString("full-%1.rcc").arg(COMPRESSED_AUDIO)))
         qDebug() << "Registered the pre-download " << QString("full-%1.rcc").arg(COMPRESSED_AUDIO);
 
     qmlRegisterSingletonType<QObject>("GCompris", 1, 0, "ActivityInfoTree", menuTreeProvider);
     qmlRegisterType<ActivityInfo>("GCompris", 1, 0, "ActivityInfo");
+
+
+}
+
+void ActivityInfoTree::filterBySearch(const QString& text)
+{
+    m_menuTree.clear();
+    if(!text.trimmed().isEmpty()) {
+        // perform search on each word entered in the searchField
+        QStringList wordsList = text.split(' ', QString::SkipEmptyParts);
+        Q_FOREACH(const QString &searchTerm, wordsList) {
+            const QString trimmedText = searchTerm.trimmed();
+            for(const auto &activity: m_menuTreeFull) {
+                if(activity->title().contains(trimmedText, Qt::CaseInsensitive) ||
+                    activity->name().contains(trimmedText, Qt::CaseInsensitive) ||
+                    activity->description().contains(trimmedText, Qt::CaseInsensitive)) {
+
+                    // add the activity only if it's not added
+                    if(m_menuTree.indexOf(activity) == -1)
+                        m_menuTree.push_back(activity);
+                }
+            }
+        }
+    }
+    else
+        m_menuTree = m_menuTreeFull;
+
+    filterEnabledActivities(false);
+    filterLockedActivities(false);
+    filterByDifficulty(ApplicationSettings::getInstance()->filterLevelMin(), ApplicationSettings::getInstance()->filterLevelMax());
+    sortByDifficulty(false);
+    Q_EMIT menuTreeChanged();
+}
+
+QVariantList ActivityInfoTree::allCharacters() {
+    QSet<QChar> keyboardChars;
+    for(auto &tree: m_menuTreeFull) {
+        const QString &title = tree->title();
+        Q_FOREACH(const QChar &letter, title) {
+            if(!letter.isSpace() && !letter.isPunct()) {
+                keyboardChars.insert(letter.toLower());
+            }
+        }
+    }
+    Q_FOREACH(const QString &letters, keyboardChars) {
+        m_keyboardCharacters.push_back(letters);
+    }
+    std::sort(m_keyboardCharacters.begin(), m_keyboardCharacters.end());
+
+    return m_keyboardCharacters;
 }
 

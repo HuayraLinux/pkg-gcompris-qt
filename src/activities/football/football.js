@@ -21,14 +21,14 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 .import GCompris 1.0 as GCompris
 .import "qrc:/gcompris/src/core/core.js" as Core
 
 var url = "qrc:/gcompris/src/activities/football/resource/"
 
 var currentLevel = 0
-var numberOfLevel = 5
+var numberOfLevel = 8
 var items
 var flag = 0
 var friction = 0.995
