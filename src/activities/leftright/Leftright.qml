@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "../../core"
 import "leftright.js" as Activity
@@ -35,7 +35,7 @@ ActivityBase {
     pageComponent: Image {
         id: background
         source: "qrc:/gcompris/src/activities/leftright/resource/back.svg"
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         focus: true
         signal start
         signal stop

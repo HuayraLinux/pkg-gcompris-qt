@@ -19,38 +19,38 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 
 QtObject {
    property string instruction: qsTr("The 4 Seasons")
    property variant levels: [
       {
-          "pixmapfile": "images/autumn.png",
-          "x": "0.25",
-          "y": "0.7",
+          "pixmapfile": "images/autumn.svg",
+          "x": 0.25,
+          "y": 0.7,
           "width": 0.4,
-          "height": 0.4
+          "height": 0.319
       },
       {
-          "pixmapfile": "images/summer.png",
-          "x": "0.75",
-          "y": "0.25",
+          "pixmapfile": "images/summer.svg",
+          "x": 0.75,
+          "y": 0.25,
           "width": 0.4,
-          "height": 0.4
+          "height": 0.319
       },
       {
-          "pixmapfile": "images/spring.png",
-          "x": "0.25",
-          "y": "0.25",
+          "pixmapfile": "images/spring.svg",
+          "x": 0.25,
+          "y": 0.25,
           "width": 0.4,
-          "height": 0.4
+          "height": 0.319
       },
       {
-          "pixmapfile": "images/winter.png",
-          "x": "0.75",
-          "y": "0.7",
+          "pixmapfile": "images/winter.svg",
+          "x": 0.75,
+          "y": 0.7,
           "width": 0.4,
-          "height": 0.4
+          "height": 0.319
       },
       {
 		  "text": qsTr("Spring"),

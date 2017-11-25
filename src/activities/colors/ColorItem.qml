@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import "findit.js" as Activity
 import "../../core"
 import GCompris 1.0
@@ -34,6 +34,10 @@ Image {
 
     function select() {
         mouseArea.enabled = false
+        if(Activity.hasWon) {
+            return
+        }
+
         if(question === Activity.getCurrentTextQuestion()) {
             particles.burst(40)
             animWin.start()

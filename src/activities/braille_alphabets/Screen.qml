@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 import "../../core"
 import "braille_alphabets.js" as Activity
@@ -37,7 +37,7 @@ ActivityBase {
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         source: Activity.url + "background.svg"
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         signal start
         signal stop
         Component.onCompleted: {
@@ -148,7 +148,7 @@ ActivityBase {
                             font.weight: Font.DemiBold
                             color: "#2a2a2a"
                             font.pointSize: NaN  // need to clear font.pointSize explicitly
-                            font.pixelSize: Math.max(parent.width * 0.5, 24)
+                            font.pixelSize: rect1.width * 0.5
                             anchors {
                                 top: rect1.bottom
                                 topMargin: 4 * ApplicationInfo.ratio
@@ -182,14 +182,13 @@ ActivityBase {
                     topMargin: 20 * ApplicationInfo.ratio
                 }
                 width: Math.min(background.width * 0.18, background.height * 0.2)
-                isLetter: items.isLetter
+                isLetter: true
                 onBrailleCharChanged: {
                     if(brailleChar === Activity.getCurrentLetter()) {
                         particles.burst(40)
                         Activity.nextQuestion()
                     }
                 }
-                audioEffects: activity.audioEffects
             }
 
             GCText {
@@ -209,7 +208,7 @@ ActivityBase {
 
         Rectangle {
             id: instructionsArea
-            height: questionItem.height * 1.2
+            height: parent.height * 0.3
             width: parent.width / 1.1
             anchors {
                 top: charList.bottom
@@ -227,12 +226,14 @@ ActivityBase {
                 id: questionItem
                 anchors.centerIn: parent
                 fontSize: largeSize
+                fontSizeMode: Text.Fit
                 horizontalAlignment: Text.AlignHCenter
                 font.weight: Font.DemiBold
                 style: Text.Outline
                 styleColor: "black"
                 color: "white"
                 width: parent.width * 0.94
+                height: parent.height * 0.94
                 wrapMode: Text.WordWrap
 
                 function initQuestion() {
@@ -244,7 +245,7 @@ ActivityBase {
                 }
 
                 onOpacityChanged: opacity == 0 ? initQuestion() : ""
-                Behavior on opacity { PropertyAnimation { duration: 1000 } }
+                Behavior on opacity { PropertyAnimation { duration: 500 } }
             }
         }
 
@@ -259,8 +260,12 @@ ActivityBase {
 
         Score {
             id: score
-            anchors.bottom: background.bottom
-            anchors.right: braille_map.left
+            anchors {
+                top: instructionsArea.bottom
+                left: instructionsArea.horizontalCenter
+                bottom: braille_map.top 
+                bottomMargin: 30 * ApplicationInfo.ratio
+            } 
             visible: !(dialogMap.visible || first_screen.visible)
         }
 
@@ -279,7 +284,7 @@ ActivityBase {
 
         Bar {
             id: bar
-            content: BarEnumContent { value: help | home | level }
+            content: BarEnumContent { value: first_screen.visible ? help | home : help | home | level }
             onHelpClicked: {
                 displayDialog(dialogHelp)
             }

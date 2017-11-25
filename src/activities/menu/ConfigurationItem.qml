@@ -1,6 +1,6 @@
 /* GCompris - ConfigurationItem.qml
  *
- * Copyright (C) 2014 Johnny Jazeix <jazeix@gmail.com>
+ * Copyright (C) 2014-2016 Johnny Jazeix <jazeix@gmail.com>
  *
  * Authors:
  *   Johnny Jazeix <jazeix@gmail.com>
@@ -19,18 +19,18 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.2
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.0
+import QtQuick 2.6
+import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 import GCompris 1.0
 
 import "../../core"
 import "qrc:/gcompris/src/core/core.js" as Core
 
 Item {
+    id: dialogConfig
 
     property var languages: allLangs.languages
-    id: dialogConfig
     height: column.height
 
     LanguageList {
@@ -41,6 +41,11 @@ Item {
         id: column
         spacing: 10
         width: parent.width
+
+        move: Transition {
+            NumberAnimation { properties: "x,y"; duration: 120 }
+        }
+
         // Put configuration here
         Row {
             id: demoModeBox
@@ -94,9 +99,88 @@ Item {
                 }
 
                 onClicked: {
-                    if(ApplicationSettings.isDemoMode)
-                    ApplicationSettings.isDemoMode = false
+                    if(ApplicationSettings.activationMode == 1) {
+                        if(ApplicationSettings.isDemoMode)
+                            ApplicationSettings.isDemoMode = false
+                    } else if(ApplicationSettings.activationMode == 2) {
+                        activationCodeEntry.visible = !activationCodeEntry.visible
+                    }
                 }
+            }
+        }
+
+        Column {
+            id: activationCodeEntry
+            width: parent.width
+            spacing: 10
+            visible: false
+            opacity: 0
+
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+
+            onVisibleChanged: {
+                if(visible) {
+                    activationInput.forceActiveFocus()
+                    activationInput.cursorPosition = 0
+                    opacity = 1
+                } else {
+                    activationInput.focus = false
+                    opacity = 0
+                }
+            }
+
+            GCText {
+                id: activationInstruction
+                fontSize: regularSize
+                color: "black"
+                style: Text.Outline
+                styleColor: "white"
+                horizontalAlignment: Text.AlignHCenter
+                width: parent.width
+                wrapMode: TextEdit.WordWrap
+                text: qsTr("On <a href='http://gcompris.net'>http://gcompris.net</a> " +
+                           "you will find the instructions to obtain an activation code.")
+                Component.onCompleted: ApplicationInfo.isDownloadAllowed ?
+                                           linkActivated.connect(Qt.openUrlExternally) : null
+            }
+
+            TextInput {
+                id: activationInput
+                width: parent.width
+                focus: true
+                font.weight: Font.DemiBold
+                font.pointSize: ApplicationSettings.baseFontSize
+                                + 14 * ApplicationInfo.fontRatio
+                color: 'black'
+                horizontalAlignment: Text.AlignHCenter
+                inputMask: '>HHHH-HHHH-HHHH;#'
+                text: ApplicationSettings.codeKey
+                onTextChanged: {
+                    var code = text.replace(/-/g,'')
+                    var codeValidity = ApplicationSettings.checkActivationCode(code);
+                    switch (codeValidity) {
+                    case 0:
+                        activationMsg.text = qsTr('Enter your activation code');
+                        break;
+                    case 1:
+                        activationMsg.text = qsTr('Sorry, your code is too old for this version of GCompris');
+                        break;
+                    case 2:
+                        activationMsg.text = qsTr('Your code is valid, thanks a lot for your support');
+                        activationCodeEntry.visible = false
+                        ApplicationSettings.codeKey = code
+                        break;
+                    }
+                }
+            }
+
+            GCText {
+                id: activationMsg
+                width: parent.width
+                color: "black"
+                fontSize: regularSize
+                horizontalAlignment: TextInput.AlignHCenter
+                wrapMode: TextEdit.WordWrap
             }
         }
 
@@ -135,6 +219,7 @@ Item {
             onCheckedChanged: {
                 isFullscreen = checked;
             }
+            visible: !ApplicationInfo.isMobile
         }
 
         GCDialogCheckBox {
@@ -150,8 +235,24 @@ Item {
             id: enableAutomaticDownloadsBox
             checked: isAutomaticDownloadsEnabled
             text: qsTr("Enable automatic downloads/updates of sound files")
+            visible: ApplicationInfo.isDownloadAllowed
             onCheckedChanged: {
                 isAutomaticDownloadsEnabled = checked;
+            }
+        }
+
+        /* Technically wordset config is a string that holds the wordset name or '' for the
+        * internal wordset. But as we support only internal and words its best to show the
+        * user a boolean choice.
+        */
+        GCDialogCheckBox {
+            id: wordsetBox
+            checked: DownloadManager.isDataRegistered("words")
+            text: enabled ? qsTr("Use full word image set") : qsTr("Download full word image set")
+            visible: ApplicationInfo.isDownloadAllowed
+            enabled: !DownloadManager.isDataRegistered("words")
+            onCheckedChanged: {
+                wordset = checked ? 'data2/words/words.rcc' : '';
             }
         }
 
@@ -215,6 +316,34 @@ Item {
         Flow {
             spacing: 5
             width: parent.width
+            Slider {
+                id: fontLetterSpacingSlider
+                width: 250 * ApplicationInfo.ratio
+                style: GCSliderStyle {}
+                maximumValue: ApplicationSettings.fontLetterSpacingMax
+                minimumValue: ApplicationSettings.fontLetterSpacingMin
+                stepSize: 1.0
+                tickmarksEnabled: true
+                updateValueWhileDragging: true
+                value: fontLetterSpacing
+                onValueChanged: ApplicationSettings.fontLetterSpacing = value
+            }
+            GCText {
+                id: fontLetterSpacingText
+                text: qsTr("Font letter spacing")
+                fontSize: mediumSize
+                wrapMode: Text.WordWrap
+            }
+            Button {
+                height: 30 * ApplicationInfo.ratio
+                text: qsTr("Default");
+                style: GCButtonStyle {}
+                onClicked: fontLetterSpacingSlider.value = ApplicationSettings.fontLetterSpacingMin
+            }
+        }
+        Flow {
+            spacing: 5
+            width: parent.width
             GCComboBox {
                 id: languageBox
                 model: dialogConfig.languages
@@ -248,6 +377,8 @@ Item {
             GCText {
                 id: voicesText
                 text: qsTr("Localized voices")
+                fontSize: mediumSize
+                wrapMode: Text.WordWrap
             }
 
             Image {
@@ -389,11 +520,8 @@ Item {
                     }
                 }
             }
-
-
         }
     }
-
 
     property bool showLockedActivities: ApplicationSettings.showLockedActivities
     property bool isAudioVoicesEnabled: ApplicationSettings.isAudioVoicesEnabled
@@ -402,7 +530,9 @@ Item {
     property bool isVirtualKeyboard: ApplicationSettings.isVirtualKeyboard
     property bool isAutomaticDownloadsEnabled: ApplicationSettings.isAutomaticDownloadsEnabled
     property bool sectionVisible: ApplicationSettings.sectionVisible
+    property string wordset: ApplicationSettings.wordset
     property int baseFontSize  // don't bind to ApplicationSettings.baseFontSize
+    property real fontLetterSpacing // don't bind to ApplicationSettings.fontLetterSpacing
     // or we get a binding loop warning
 
     function loadFromConfig() {
@@ -426,8 +556,12 @@ Item {
         sectionVisible = ApplicationSettings.sectionVisible
         sectionVisibleBox.checked = sectionVisible
 
-        baseFontSize = ApplicationSettings.baseFontSize;
+        wordset = ApplicationSettings.wordset
+        wordsetBox.checked = DownloadManager.isDataRegistered("words") || ApplicationSettings.wordset == 'data2/words/words.rcc'
+        wordsetBox.enabled = !DownloadManager.isDataRegistered("words")
 
+        baseFontSize = ApplicationSettings.baseFontSize;
+        fontLetterSpacing = ApplicationSettings.fontLetterSpacing;
         // Set locale
         for(var i = 0 ; i < dialogConfig.languages.length ; i ++) {
             if(dialogConfig.languages[i].locale === ApplicationSettings.locale) {
@@ -461,16 +595,18 @@ Item {
         ApplicationSettings.isVirtualKeyboard = isVirtualKeyboard
         ApplicationSettings.isAutomaticDownloadsEnabled = isAutomaticDownloadsEnabled
         ApplicationSettings.sectionVisible = sectionVisible
+        ApplicationSettings.wordset = wordset
 
         ApplicationSettings.isEmbeddedFont = fonts.get(fontBox.currentIndex).isLocalResource;
         ApplicationSettings.font = fonts.get(fontBox.currentIndex).text
         ApplicationSettings.fontCapitalization = fontCapitalizationModel[fontCapitalizationBox.currentIndex].value
 
         ApplicationSettings.saveBaseFontSize();
+        ApplicationSettings.notifyFontLetterSpacingChanged();
 
         if (ApplicationSettings.locale != dialogConfig.languages[languageBox.currentIndex].locale) {
             ApplicationSettings.locale = dialogConfig.languages[languageBox.currentIndex].locale
-            if(!DownloadManager.isDataRegistered(
+            if(ApplicationInfo.isDownloadAllowed && !DownloadManager.isDataRegistered(
                         "voices-" + ApplicationInfo.CompressedAudio + "/" +
                         ApplicationInfo.getVoicesLocale(dialogConfig.languages[languageBox.currentIndex].locale)
                         ))
@@ -487,15 +623,45 @@ Item {
                 qsTr("No"), null,
                 null
                 );
-            } else // check for updates or/and register new voices
-            DownloadManager.updateResource(
-            DownloadManager.getVoicesResourceForLocale(ApplicationSettings.locale))
+            } else {
+                // check for updates or/and register new voices
+                DownloadManager.updateResource(
+                            DownloadManager.getVoicesResourceForLocale(ApplicationSettings.locale))
+            }
         }
-    }
-
-    function reset()
-    {
-        ApplicationSettings.baseFontSize = baseFontSize;
+        // download words.rcc if needed
+        if(ApplicationSettings.wordset != "") {
+            // we want to use the external dataset, it is either in
+            // words/words.rcc or full-${CA}.rcc
+            if(DownloadManager.isDataRegistered("words")) {
+                // we either have it, we try to update in the background
+                // or we are downloading it
+                if(DownloadManager.haveLocalResource(wordset))
+                    DownloadManager.updateResource(wordset)
+            }
+            else {
+                // download automatically if automatic download else ask for download
+                if(isAutomaticDownloadsEnabled) {
+                    var prevAutomaticDownload = ApplicationSettings.isAutomaticDownloadsEnabled
+                    ApplicationSettings.isAutomaticDownloadsEnabled = true;
+                    DownloadManager.updateResource(wordset);
+                    ApplicationSettings.isAutomaticDownloadsEnabled = prevAutomaticDownload
+                }
+                else {
+                    Core.showMessageDialog(main,
+                    qsTr("The images for several activities are not yet installed. ")
+                    + qsTr("Do you want to download them now?"),
+                    qsTr("Yes"),
+                    function() {
+                        if (DownloadManager.downloadResource(wordset))
+                        var downloadDialog = Core.showDownloadDialog(pageView.currentItem, {});
+                    },
+                    qsTr("No"), function() { ApplicationSettings.wordset = '' },
+                    null
+                    );
+                }
+            }
+        }
     }
 
     ListModel {
@@ -509,11 +675,18 @@ Item {
             excludedFonts.push("ding");
             excludedFonts.push("symbol");
 
+            // first display fonts from rcc
+            for(var i = 0 ; i < rccFonts.length ; ++ i) {
+                // Append fonts from resources
+                fonts.append({ "text": rccFonts[i], "isLocalResource": true });
+            }
+
             for(var i = 0 ; i < systemFonts.length ; ++ i) {
                 var isExcluded = false;
+                var systemFont = systemFonts[i].toLowerCase();
                 // Remove symbol fonts
                 for(var j = 0 ; j < excludedFonts.length ; ++ j) {
-                    if(systemFonts[i].toLowerCase().indexOf(excludedFonts[j].toLowerCase()) != -1) {
+                    if(systemFont.indexOf(excludedFonts[j].toLowerCase()) != -1) {
                         isExcluded = true;
                         break;
                     }
@@ -521,7 +694,7 @@ Item {
 
                 // Remove fonts from rcc (if you have a default font from rcc, Qt will add it to systemFonts)
                 for(var j = 0 ; j < rccFonts.length ; ++ j) {
-                    if(rccFonts[j].toLowerCase().indexOf(systemFonts[i].toLowerCase()) != -1) {
+                    if(rccFonts[j].toLowerCase().indexOf(systemFont) != -1) {
                         isExcluded = true;
                         break;
                     }
@@ -531,10 +704,6 @@ Item {
                 if(!isExcluded) {
                     fonts.append({ "text": systemFonts[i], "isLocalResource": false });
                 }
-            }
-            for(var i = 0 ; i < rccFonts.length ; ++ i) {
-                // Append fonts from resources
-                fonts.append({ "text": rccFonts[i], "isLocalResource": true });
             }
         }
     }
@@ -548,10 +717,12 @@ Item {
     function hasConfigChanged() {
         return (ApplicationSettings.locale !== dialogConfig.languages[languageBox.currentIndex].locale ||
         (ApplicationSettings.sectionVisible != sectionVisible) ||
+        (ApplicationSettings.wordset != wordset) ||
         (ApplicationSettings.font != fonts.get(fontBox.currentIndex).text) ||
         (ApplicationSettings.isEmbeddedFont != fonts.get(fontBox.currentIndex).isLocalResource) ||
         (ApplicationSettings.isEmbeddedFont != fonts.get(fontBox.currentIndex).isLocalResource) ||
         (ApplicationSettings.fontCapitalization != fontCapitalizationModel[(fontcapitalizationBox.currentIndex)].value) ||
+        (ApplicationSettings.fontLetterSpacing != fontLetterSpacing) ||
         (ApplicationSettings.isAudioVoicesEnabled != isAudioVoicesEnabled) ||
         (ApplicationSettings.isAudioEffectsEnabled != isAudioEffectsEnabled) ||
         (ApplicationSettings.isFullscreen != isFullscreen) ||
@@ -561,7 +732,6 @@ Item {
         (ApplicationSettings.showLockedActivities != showLockedActivities)
         );
     }
-
 }
 
     

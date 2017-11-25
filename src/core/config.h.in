@@ -21,11 +21,16 @@
 #ifndef GCOMPRIS_CONFIG_H
 #define GCOMPRIS_CONFIG_H
 
-/* Version number of package */
+/* Version number of package (string) */
 #define VERSION "@GCOMPRIS_VERSION@"
+/* Version number of package (integer) */
+#define VERSION_CODE @GCOMPRIS_VERSION_CODE@
+
 /* Folder where rccs and translations are installed */
-#ifdef  Q_OS_MAC
+#ifdef  Q_OS_MACX
 #define GCOMPRIS_DATA_FOLDER "../Resources"
+#elif  Q_OS_IOS
+#define GCOMPRIS_DATA_FOLDER "."
 #else
 #define GCOMPRIS_DATA_FOLDER "../@_data_dest_dir@"
 #endif
@@ -35,5 +40,12 @@
 #define COMPRESSED_AUDIO "@COMPRESSED_AUDIO@"
 /* Download Allowed */
 #define DOWNLOAD_ALLOWED "@WITH_DOWNLOAD@"
+/* Date at which GCompris has been built */
+#define BUILD_DATE "@BUILD_DATE@"
+/* Type of activation system */
+#define ACTIVATION_MODE "@ACTIVATION_MODE@"
+
+/* Defines the renderer backend: Qt software renderer (requires Qt 5.8), openGL or default one */
+#define GRAPHICAL_RENDERER "@GRAPHICAL_RENDERER@"
 
 #endif // GCOMPRIS_CONFIG_H

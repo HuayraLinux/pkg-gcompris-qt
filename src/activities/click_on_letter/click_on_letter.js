@@ -22,7 +22,7 @@
  */
 
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 .import GCompris 1.0 as GCompris //for ApplicationInfo
 .import "qrc:/gcompris/src/core/core.js" as Core
 
@@ -80,7 +80,8 @@ function validateLevels(levels)
 function loadLevels()
 {
     var ret;
-    var filename = GCompris.ApplicationInfo.getLocaleFilePath(url + "levels-$LOCALE.json");
+    var locale = GCompris.ApplicationInfo.getVoicesLocale(items.locale)
+    var filename = GCompris.ApplicationInfo.getLocaleFilePath(url + "levels-" + locale + ".json");
     levels = items.parser.parseFromUrl(filename);
     if (levels == null) {
         console.warn("Click_on_letter: Invalid levels file " + filename);

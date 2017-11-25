@@ -22,7 +22,7 @@
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 .import GCompris 1.0 as GCompris
 .import "qrc:/gcompris/src/core/core.js" as Core
 .import "qrc:/gcompris/src/activities/lang/lang_api.js" as Lang
@@ -66,7 +66,7 @@ function initLevel() {
                 letters.push(currentWord.charAt(j));
         }
     }
-    letters.sort();
+    letters = GCompris.ApplicationInfo.localeSort(letters, spellItems.locale);
     // generate layout from letter map
     var layout = [];
     var row = 0;
@@ -90,8 +90,7 @@ function initLevel() {
 function initSubLevel() {
     spellItems.score.currentSubLevel++
     spellItems.goodWord = wordList[spellItems.score.currentSubLevel - 1]
-    spellItems.wordImage.changeSource("qrc:/gcompris/data/" +
-                                      spellItems.goodWord.image)
+    spellItems.wordImage.changeSource(spellItems.goodWord.image)
     spellItems.hintText.changeHint(spellItems.goodWord.translatedTxt[0])
     spellItems.hintText.visible = true
     spellItems.answer.text = ""

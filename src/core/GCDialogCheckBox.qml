@@ -18,9 +18,9 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.0
+import QtQuick 2.6
+import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 import GCompris 1.0
 
 /**
@@ -38,9 +38,10 @@ CheckBox {
 
         indicator: Image {
             sourceSize.height: 50 * ApplicationInfo.ratio
+            property string suffix: control.enabled ? ".svg" : "_disabled.svg"
             source:
-                control.checked ? "qrc:/gcompris/src/core/resource/apply.svg" :
-                                  "qrc:/gcompris/src/core/resource/cancel.svg"
+                control.checked ? "qrc:/gcompris/src/core/resource/apply" + suffix :
+                                  "qrc:/gcompris/src/core/resource/cancel" + suffix
         }
         label: GCText {
             fontSize: mediumSize

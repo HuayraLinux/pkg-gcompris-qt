@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 .import GCompris 1.0 as GCompris //for ApplicationInfo
 
 var currentLevel = 1
@@ -28,16 +28,20 @@ var currentSubLevel = 0
 var numberOfLevel
 var numberOfSubLevel
 var items
-var url
+var imagesUrl
+var soundsUrl
+var boardsUrl
 var glowEnabled
 var glowEnabledDefault
 var spots = []
 var showText = []
 var displayDropCircle
 
-function start(items_, url_, levelCount_, answerGlow_, displayDropCircle_) {
+function start(items_, imagesUrl_, soundsUrl_, boardsUrl_, levelCount_, answerGlow_, displayDropCircle_) {
     items = items_
-    url = url_
+    imagesUrl = imagesUrl_
+    soundsUrl = soundsUrl_
+    boardsUrl = boardsUrl_
     numberOfLevel = levelCount_
     glowEnabledDefault = answerGlow_
     displayDropCircle = displayDropCircle_
@@ -56,7 +60,7 @@ function stop() {
 
 function initLevel() {
     items.bar.level = currentLevel
-    var filename = url + "board" + "/" + "board" + currentLevel + "_" + currentSubLevel + ".qml"
+    var filename = boardsUrl + "board" + "/" + "board" + currentLevel + "_" + currentSubLevel + ".qml"
     items.dataset.source = filename
     var levelData = items.dataset.item
     
@@ -125,7 +129,9 @@ function initLevel() {
         if(levelData.levels[i].type === undefined) {
             items.availablePieces.model.append( {
                 "imgName": levelData.levels[i].pixmapfile,
-                "imgSound": levelData.levels[i].sound ? levelData.levels[i].sound : "",
+                "imgSound": levelData.levels[i].soundFile ?
+                     soundsUrl + levelData.levels[i].soundFile :
+                     "qrc:/gcompris/src/core/resource/sounds/scroll.wav",
                 "imgHeight": levelData.levels[i].height == undefined ? 0 : levelData.levels[i].height,
                 "imgWidth": levelData.levels[i].width == undefined ? 0 : levelData.levels[i].width,
                 "toolTipText":
@@ -135,19 +141,13 @@ function initLevel() {
                                                        (levelData.levels[i].toolTipText.split('|').length > 1 ?
                                                         levelData.levels[i].toolTipText.split('|')[1] :
                                                         levelData.levels[i].toolTipText),
-                "pressSound": levelData.levels[i].soundFile == undefined ? 
-							  "qrc:/gcompris/src/core/resource/sounds/bleep.wav" : url + levelData.levels[i].soundFile
             });
 
             spots[j++] = dropItemComponent.createObject(
                          items.backgroundImage, {
                             "posX": levelData.levels[i].x,
                             "posY": levelData.levels[i].y,
-                            "imgHeight": levelData.levels[i].height == undefined ? 0 : levelData.levels[i].height,
-                            "imgWidth": levelData.levels[i].width == undefined ? 0 : levelData.levels[i].width,
-                            "dropAreaSize": levelData.levels[i].dropAreaSize == undefined ? 15 : levelData.levels[i].dropAreaSize,
                             "imgName" : levelData.levels[i].pixmapfile,
-                            "factor": Math.max(3, 1.0 / levelData.levels.length * 100)
                          });
         }
         //Create Text pieces for the level which has to display additional information
@@ -163,7 +163,11 @@ function initLevel() {
         //Create static background pieces
         else {
             if(levelData.levels[i].type === "SHAPE_BACKGROUND_IMAGE") {
-                items.backgroundImage.source = url + levelData.levels[i].pixmapfile
+                items.backgroundImage.source = imagesUrl + levelData.levels[i].pixmapfile
+                if(levelData.levels[i].width)
+                    items.backgroundImage.sourceSize.width = levelData.levels[i].width
+                if(levelData.levels[i].height)
+                    items.backgroundImage.sourceSize.height = levelData.levels[i].height
             }
             else {
                 items.backgroundPiecesModel.append( {
@@ -180,6 +184,10 @@ function initLevel() {
     //Initialize displayedGroup variable which is used for showing navigation bars
     for(var i=0;i<items.availablePieces.view.nbDisplayedGroup;++i)
         items.availablePieces.view.displayedGroup[i] = true
+}
+
+function hideInstructions() {
+        items.instruction.opacity = 0
 }
 
 function nextSubLevel() {

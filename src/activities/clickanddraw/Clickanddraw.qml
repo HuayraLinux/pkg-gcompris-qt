@@ -19,12 +19,14 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
+import "../number_sequence"
+import "../../core" as Core
+import "clickanddraw_dataset.js" as Dataset
 
-import "../../core"
-import "../drawnumber"
-
-Drawnumber {
-    clickanddrawflag: true
+NumberSequence {
+    mode: "clickanddraw"
     pointImageOpacity: 0
+    dataset: Dataset
+    url: "qrc:/gcompris/src/activities/number_sequence/resource/"
 }

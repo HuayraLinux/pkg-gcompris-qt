@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -41,7 +41,7 @@ ActivityBase {
         focus: true
         fillMode: Image.PreserveAspectCrop
         source: Activity.url + Activity.getFirstImage()
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
 
         Component.onCompleted: {
             activity.start.connect(start)

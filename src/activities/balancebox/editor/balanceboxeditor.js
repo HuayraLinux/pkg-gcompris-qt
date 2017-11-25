@@ -20,7 +20,7 @@
  */
 
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 .import GCompris 1.0 as GCompris
 .import "qrc:/gcompris/src/core/core.js" as Core
 
@@ -155,13 +155,17 @@ function saveModel()
         levels[i].level = i + 1;
     if (!props.file.write(JSON.stringify(levels), userFile))
         Core.showMessageDialog(props.editor,
-                               qsTr("Error saving %1 levels to your levels file (%2)")
-                               .arg(numberOfLevel).arg(userFile),
+                               //~ singular Error saving %n level to your levels file (%1)
+                               //~ plural Error saving %n levels to your levels file (%1)
+                               qsTr("Error saving %n level(s) to your levels file (%1)", "", numberOfLevel)
+                               .arg(userFile),
                                "", null, "", null, null);
     else {
         Core.showMessageDialog(props.editor,
-                               qsTr("Saved %1 levels to your levels file (%2)")
-                               .arg(numberOfLevel).arg(userFile),
+                               //~ singular Saved %n level to your levels file (%1)
+                               //~ plural Saved %n levels to your levels file (%1)
+                               qsTr("Saved %n level(s) to your levels file (%1)", "", numberOfLevel)
+                               .arg(userFile),
                                "", null, "", null, null);
         levelChanged = false;
         currentIsNewLevel = false;

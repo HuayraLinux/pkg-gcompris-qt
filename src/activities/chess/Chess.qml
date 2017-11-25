@@ -19,9 +19,9 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.0
+import QtQuick 2.6
+import QtQuick.Controls 1.5
+import QtQuick.Controls.Styles 1.4
 import GCompris 1.0
 
 import "../../core"
@@ -31,6 +31,7 @@ import "chess.js" as Activity
 ActivityBase {
     id: activity
 
+    property bool acceptClick: true
     property bool twoPlayers: false
     // difficultyByLevel means that at level 1 computer is bad better at last level
     property bool difficultyByLevel: true
@@ -48,7 +49,7 @@ ActivityBase {
     pageComponent: Image {
         id: background
         anchors.fill: parent
-        source: Activity.url + 'background.svg'
+        source: Activity.url + 'background-wood.svg'
         signal start
         signal stop
 
@@ -66,8 +67,11 @@ ActivityBase {
             property alias bar: bar
             property alias bonus: bonus
             property int barHeightAddon: ApplicationSettings.isBarHidden ? 1 : 3
-            property int cellSize: Math.min(background.width / (8 + 2),
-                                            background.height / (8 + barHeightAddon))
+            property bool isPortrait: (background.height > background.width)
+            property int cellSize: items.isPortrait ?
+                                       Math.min(background.width / (8 + 2),
+                                                (background.height - controls.height) / (8 + barHeightAddon)) :
+                                       Math.min(background.width / (8 + 2), background.height / (8 + barHeightAddon))
             property variant fen: activity.fen
             property bool twoPlayer: activity.twoPlayers
             property bool difficultyByLevel: activity.difficultyByLevel
@@ -81,7 +85,7 @@ ActivityBase {
             property bool blackTurn
             property bool gameOver
             property string message
-            property alias trigComputerMove: trigComputerMove            
+            property alias trigComputerMove: trigComputerMove
 
             Behavior on cellSize { PropertyAnimation { easing.type: Easing.InOutQuad; duration: 1000 } }
         }
@@ -89,35 +93,36 @@ ActivityBase {
         onStart: { Activity.start(items) }
         onStop: { Activity.stop() }
 
-        // TODO Imprement a vertical layout
         Grid {
             anchors {
                 top: parent.top
-                topMargin: items.cellSize / 2
+                topMargin: items.isPortrait ? 0 : items.cellSize / 2
                 leftMargin: 10 * ApplicationInfo.ratio
                 rightMargin: 10 * ApplicationInfo.ratio
             }
-            columns: 3
-            rows: 1
-            width: background.width
+            columns: (items.isPortrait==true)?1:3
+            rows: (items.isPortrait==true)?2:1
+            width: (items.isPortrait==true)?undefined:background.width
+            anchors.horizontalCenter: parent.horizontalCenter
             spacing: 10
             horizontalItemAlignment: Grid.AlignHCenter
             verticalItemAlignment: Grid.AlignVCenter
 
             Column {
                 id: controls
-                spacing: 10
                 anchors {
                     leftMargin: 10
                     rightMargin: 10
                 }
-                width: Math.max(undo.width * 1.2,
-                                Math.min(
-                                    (background.width * 0.9 - undo.width - chessboard.width),
-                                    (background.width - chessboard.width) / 2))
+                width: items.isPortrait ?
+                           parent.width :
+                           Math.max(undo.width * 1.2,
+                                    Math.min(
+                                        (background.width * 0.9 - undo.width - chessboard.width),
+                                        (background.width - chessboard.width) / 2))
 
                 GCText {
-                    color: "black"
+                    color: "white"
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: parent.width
                     fontSize: smallSize
@@ -126,50 +131,72 @@ ActivityBase {
                     wrapMode: TextEdit.WordWrap
                 }
 
-                Button {
-                    id: undo
+                Grid {
+                    spacing: 10
+                    columns: items.isPortrait ? 3 : 1
                     anchors.horizontalCenter: parent.horizontalCenter
-                    height: 30 * ApplicationInfo.ratio
-                    text: qsTr("Undo");
-                    style: GCButtonStyle {}
-                    onClicked: Activity.undo()
-                    enabled: items.history.length > 0 ? 1 : 0
-                    opacity: enabled
-                    Behavior on opacity {
-                        PropertyAnimation {
-                            easing.type: Easing.InQuad
-                            duration: 200
+                    horizontalItemAlignment: Grid.AlignHCenter
+                    verticalItemAlignment: Grid.AlignVCenter
+
+                    Button {
+                        id: undo
+                        height: 30 * ApplicationInfo.ratio
+                        text: qsTr("Undo");
+                        style: GCButtonStyle { theme: "light" }
+                        onClicked: Activity.undo()
+                        enabled: items.history.length > 0 ? 1 : 0
+                        opacity: enabled
+                        Behavior on opacity {
+                            PropertyAnimation {
+                                easing.type: Easing.InQuad
+                                duration: 200
+                            }
                         }
                     }
-                }
 
-                Button {
-                    id: redo
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    height: 30 * ApplicationInfo.ratio
-                    text: qsTr("Redo");
-                    style: GCButtonStyle {}
-                    onClicked: Activity.redo()
-                    enabled: items.redo_stack.length > 0 ? 1 : 0
-                    opacity: enabled
-                    Behavior on opacity {
-                        PropertyAnimation {
-                            easing.type: Easing.InQuad
-                            duration: 200
+                    Button {
+                        id: redo
+                        height: 30 * ApplicationInfo.ratio
+                        text: qsTr("Redo");
+                        style: GCButtonStyle { theme: "light" }
+                        onClicked: {
+                            if (!twoPlayers) {
+                                acceptClick = false;
+                                Activity.redo()
+                            } else {
+                                Activity.redo()
+                            }
+                        }
+                        enabled: items.redo_stack.length > 0 && acceptClick ? 1 : 0
+                        opacity: enabled
+                        Behavior on opacity {
+                            PropertyAnimation {
+                                easing.type: Easing.InQuad
+                                duration: 200
+                            }
                         }
                     }
-                }
 
-                Button {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    height: 30 * ApplicationInfo.ratio
-                    text: qsTr("Swap");
-                    style: GCButtonStyle {}
-                    enabled: items.twoPlayer
-                    opacity: enabled
-                    onClicked: chessboard.swap()
+                    Button {
+                        height: 30 * ApplicationInfo.ratio
+                        text: qsTr("Swap");
+                        style: GCButtonStyle { theme: "light" }
+                        enabled: items.twoPlayer
+                        opacity: enabled
+                        onClicked: chessboard.swap()
+                    }
                 }
             }
+
+
+            Rectangle {
+                id:boardBg
+                width: items.cellSize * 8.2
+                height: items.cellSize * 8.2
+                z: 09
+                color: "#3A1F0A"
+
+
 
             // The chessboard
             GridView {
@@ -184,12 +211,14 @@ ActivityBase {
                 layoutDirection: Qt.RightToLeft
                 delegate: square
                 rotation: 180
+                z: 10
+                anchors.centerIn: boardBg
 
                 Component {
                     id: square
-                    Rectangle {
-                        color: index % 2 + (Math.floor(index / 8) % 2) == 1 ?
-                                   "#FFFFFF99" : '#FF9999FF';
+                    Image {
+                        source: index % 2 + (Math.floor(index / 8) % 2) == 1 ?
+                                   Activity.url + 'chess-white.svg' : Activity.url + 'chess-black.svg';
                         width: items.cellSize
                         height: items.cellSize
                     }
@@ -205,6 +234,8 @@ ActivityBase {
                         chessboard.rotation = 180
                 }
             }
+            }
+
         }
 
         Repeater {
@@ -227,9 +258,9 @@ ActivityBase {
                 Rectangle {
                     id: possibleMove
                     anchors.fill: parent
-                    color: parent.containsDrag ? 'green' : 'transparent'
+                    color: parent.containsDrag ? '#803ACAFF' : 'transparent'
                     border.width: parent.acceptMove ? 5 : 0
-                    border.color: "black"
+                    border.color: '#FF808080'
                     z: 1
                 }
             }
@@ -286,14 +317,11 @@ ActivityBase {
                         }
                     }
                     onReleased: {
-                        if(piece.Drag.target) {
-                            if(items.from != -1) {
-                                Activity.moveTo(items.from, piece.Drag.target.pos)
-                            }
-                        } else {
+                        // If no target or move not possible, we reset the position
+                        if(!piece.Drag.target || (items.from != -1 && !Activity.moveTo(items.from, piece.Drag.target.pos))) {
                             var pos = parent.pos
                             // Force recalc of the old x,y position
-                            parent.pos = 0
+                            parent.pos = -1
                             pieces.getPieceAt(pos).move(pos)
                         }
                     }
@@ -338,7 +366,10 @@ ActivityBase {
             id: redoTimer
             repeat: false
             interval: 400
-            onTriggered: Activity.moveByEngine(move)
+            onTriggered: {
+                acceptClick = true;
+                Activity.moveByEngine(move)
+            }
             property var move
 
             function moveByEngine(engineMove) {
@@ -355,14 +386,18 @@ ActivityBase {
         Bar {
             id: bar
             content: BarEnumContent { value: help | home | (items.twoPlayer ? 0 : level) |
-                                             (items.twoPlayer ? 0 : reload) }
+                                             (items.twoPlayer && !items.gameOver ? 0 : reload) }
+
             onHelpClicked: {
                 displayDialog(dialogHelp)
             }
             onPreviousLevelClicked: Activity.previousLevel()
             onNextLevelClicked: Activity.nextLevel()
             onHomeClicked: activity.home()
-            onReloadClicked: Activity.initLevel()
+            onReloadClicked: {
+                trigComputerMove.stop()
+                Activity.initLevel()
+            }
         }
 
         Bonus {

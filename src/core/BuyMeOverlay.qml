@@ -18,8 +18,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
-import QtQuick.Controls 1.0
+import QtQuick 2.6
+import QtQuick.Controls 1.5
 import GCompris 1.0
 
 Item {
@@ -34,58 +34,50 @@ Item {
         color: "grey"
     }
     /* Activation Instruction */
-    Item {
+    Rectangle {
         id: instruction
         z: 99
         anchors {
             horizontalCenter: parent.horizontalCenter
+            horizontalCenterOffset: - cancelButton.width / 2
             top: parent.top
             topMargin: 40
         }
-        width: parent.width * 0.9
+        width: parent.width - cancelButton.width * 2
+        height: parent.height/2
+        radius: 10
+        border.width: 2
+        border.color: "black"
+        color: 'white'
 
-        GCText {
-            id: instructionTxt
-            fontSize: mediumSize
-            color: "white"
-            style: Text.Outline
-            styleColor: "black"
-            horizontalAlignment: Text.AlignHCenter
-            width: parent.width
-            wrapMode: TextEdit.WordWrap
-            z: 2
-            text: qsTr("This activity is only available in the full version of GCompris.")
-        }
-
-        Button {
-            width: parent.width * 0.8
-            height: 60 * ApplicationInfo.ratio
+        Row {
+            id: row
             anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: instructionTxt.bottom
-                topMargin: 10
-            }
-            text: qsTr("Buy the full version").toUpperCase()
-            style: GCButtonStyle {
+                fill: parent
+                margins: 10
             }
 
-            onClicked: {
-                if(ApplicationSettings.isDemoMode)
-                    ApplicationSettings.isDemoMode = false
+            Image {
+                id: lock
+                source: "qrc:/gcompris/src/activities/menu/resource/lock.svg"
+                sourceSize.width: 30 * ApplicationInfo.ratio
             }
-        }
 
-        Rectangle {
-            anchors.fill: instructionTxt
-            z: 1
-            opacity: 0.8
-            radius: 10
-            border.width: 2
-            border.color: "black"
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: "#000" }
-                GradientStop { position: 0.9; color: "#666" }
-                GradientStop { position: 1.0; color: "#AAA" }
+            GCText {
+                id: instructionTxt
+                fontSizeMode: Text.Fit
+                color: "black"
+                style: Text.Outline
+                styleColor: "white"
+                horizontalAlignment: Text.AlignHCenter
+                width: parent.width - lock.width
+                height: instruction.height - row.anchors.margins/2
+                wrapMode: TextEdit.WordWrap
+                z: 2
+                text: qsTr("This activity is only available in the full version of GCompris." + "<br/>" +
+                           "On <a href='http://gcompris.net'>http://gcompris.net</a> " +
+                           "you will find the instructions to obtain an activation code." + " " +
+                           "Then go to the main configuration dialog to enter the code.")
             }
         }
     }
@@ -119,5 +111,11 @@ Item {
             // Ctrl+W exit the current activity
             home()
         }
+    }
+
+    // The cancel button
+    GCButtonCancel {
+        id: cancelButton
+        onClose: home()
     }
 }

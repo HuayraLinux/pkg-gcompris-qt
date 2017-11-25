@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -34,7 +34,7 @@ ActivityBase {
         id: background
         anchors.fill: parent
         source: items.url + 'xylofon_background.svg'
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         fillMode: Image.PreserveAspectCrop
 
         signal start
@@ -127,8 +127,8 @@ ActivityBase {
         }
 
         function playNote(index) {
-            activity.audioEffects.play(items.url +
-                                       'xylofon_son' + (index + 1) + '.ogg')
+            activity.audioEffects.play(ApplicationInfo.getAudioFilePath(items.url +
+                                       'xylofon_son' + (index + 1) + '.$CA'))
         }
 
         Timer {
@@ -223,7 +223,7 @@ ActivityBase {
         }
 
         function repeat() {
-            activity.audioEffects.play(items.url + 'xylofon_melody.ogg')
+            activity.audioEffects.play(ApplicationInfo.getAudioFilePath(items.url + 'xylofon_melody.$CA'))
             items.questionToPlay = items.question.slice()
             items.answer = []
             questionPlayer.start()

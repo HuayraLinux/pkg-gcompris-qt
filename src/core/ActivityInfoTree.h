@@ -21,41 +21,48 @@
 #ifndef ACTIVITYINFOTREE_H
 #define ACTIVITYINFOTREE_H
 
-#include <qqml.h>
 #include "ActivityInfo.h"
 #include <QQmlEngine>
 #include <QDir>
 
 class ActivityInfoTree : public QObject
 {
-	Q_OBJECT
-	Q_PROPERTY(ActivityInfo* rootMenu READ getRootMenu CONSTANT)
-	Q_PROPERTY(QQmlListProperty<ActivityInfo> menuTree READ menuTree NOTIFY menuTreeChanged)
+    Q_OBJECT
+    Q_PROPERTY(ActivityInfo* rootMenu READ getRootMenu CONSTANT)
+    Q_PROPERTY(QQmlListProperty<ActivityInfo> menuTree READ menuTree NOTIFY menuTreeChanged)
     Q_PROPERTY(ActivityInfo* currentActivity READ getCurrentActivity WRITE setCurrentActivity NOTIFY currentActivityChanged)
+    Q_PROPERTY(QVariantList characters READ allCharacters CONSTANT)
 
 public:
-	explicit ActivityInfoTree(QObject *parent = 0);
-	QQmlListProperty<ActivityInfo> menuTree();
-	ActivityInfo *getRootMenu() const;
-	void setRootMenu(ActivityInfo *rootMenu);
-	ActivityInfo *menuTree(int) const;
-	void setCurrentActivity(ActivityInfo *currentActivity);
-	ActivityInfo *getCurrentActivity() const;
-	ActivityInfo *getParentActivity(ActivityInfo *root, ActivityInfo *menu);
-	void menuTreeAppend(ActivityInfo *menu);
-	void menuTreeAppend(QQmlEngine *engine,
-						const QDir &menuDir, const QString &menuFile);
-	void sortByDifficulty();
-	void sortByName();
+    explicit ActivityInfoTree(QObject *parent = 0);
+    QQmlListProperty<ActivityInfo> menuTree();
+    ActivityInfo *getRootMenu() const;
+    void setRootMenu(ActivityInfo *rootMenu);
+    ActivityInfo *menuTree(int) const;
+    void setCurrentActivity(ActivityInfo *currentActivity);
+    ActivityInfo *getCurrentActivity() const;
+    ActivityInfo *getParentActivity(ActivityInfo *root, ActivityInfo *menu);
+    void menuTreeAppend(ActivityInfo *menu);
+    void menuTreeAppend(QQmlEngine *engine,
+                        const QDir &menuDir, const QString &menuFile);
+    void sortByDifficulty(bool emitChanged = true);
+    void sortByName(bool emitChanged = true);
+    QVariantList allCharacters();
 
-protected slots:
-    Q_INVOKABLE void filterByTag(const QString &tag);
-    Q_INVOKABLE void filterLockedActivities();
-    Q_INVOKABLE void filterEnabledActivities();
+protected Q_SLOTS:
+    Q_INVOKABLE void filterByTag(const QString &tag, bool emitChanged = true);
+    Q_INVOKABLE void filterLockedActivities(bool emitChanged = true);
+    Q_INVOKABLE void filterEnabledActivities(bool emitChanged = true);
+    // create a tree from the whole list of activities with the activities created between the two versions
+    Q_INVOKABLE void filterCreatedWithinVersions(int firstVersion, int lastVersion,
+                                                 bool emitChanged = true);
+    Q_INVOKABLE void filterBySearch(const QString& text);
+    Q_INVOKABLE void filterByDifficulty(int levelMin, int levelMax);
 
 signals:
-	void menuTreeChanged();
-	void currentActivityChanged();
+    void menuTreeChanged();
+    void currentActivityChanged();
+    void allCharactersChanged();
 
 private:
     // this is the full activity list, it never changes
@@ -64,30 +71,30 @@ private:
     QList<ActivityInfo *> m_menuTree;
     ActivityInfo *m_rootMenu;
     ActivityInfo *m_currentActivity;
+    QVariantList m_keyboardCharacters;
     static int menuTreeCount(QQmlListProperty<ActivityInfo> *property);
     static ActivityInfo *menuTreeAt(QQmlListProperty<ActivityInfo> *property, int index);
 
-	struct SortByDifficulty
-	{
-		bool operator()(const ActivityInfo *a, const ActivityInfo *b) const
-		{
-			return a->difficulty() < b->difficulty();
-		}
-	};
+    struct SortByDifficulty
+    {
+        bool operator()(const ActivityInfo *a, const ActivityInfo *b) const
+        {
+            return a->difficulty() < b->difficulty();
+        }
+    };
 
 	struct SortByName
 	{
-		bool operator()(const ActivityInfo *a, const ActivityInfo *b) const
-		{
-			return a->name() < b->name();
-		}
+            bool operator()(const ActivityInfo *a, const ActivityInfo *b) const
+            {
+                return a->name() < b->name();
+            }
 	};
 
 public:
-	static void init();
-	static QObject *menuTreeProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static void init();
+    static QObject *menuTreeProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
     void exportAsSQL();
-
 };
 
 #endif // ACTIVITYINFOTREE_H

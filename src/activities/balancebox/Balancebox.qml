@@ -1,6 +1,6 @@
 /* GCompris - balancebox.qml
  *
- * Copyright (C) 2014-2015 Holger Kaelberer <holger.k@elberer.de>
+ * Copyright (C) 2014-2016 Holger Kaelberer <holger.k@elberer.de>
  *
  * Authors:
  *   Holger Kaelberer <holger.k@elberer.de>
@@ -18,13 +18,13 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import QtQuick.Window 2.1
 import QtSensors 5.0
 import QtGraphicalEffects 1.0
 import GCompris 1.0
 import Box2D 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 1.5
 
 
 import "../../core"
@@ -43,10 +43,10 @@ ActivityBase {
     property bool alwaysStart: true     // enforce start signal for editor-to-testing- and returning from config-transition
     property bool needRestart: true
 
-    onWidthChanged: if (inForeground)
-                        Activity.reconfigureScene();
+    onWidthChanged:if (inForeground && pageView.currentItem === activity)
+                       Activity.reconfigureScene();
 
-    onHeightChanged: if (inForeground)
+    onHeightChanged: if (inForeground && pageView.currentItem === activity)
                          Activity.reconfigureScene();
 
     onStart: {
@@ -258,7 +258,7 @@ ActivityBase {
                 scale: 1.0
                 width: items.ballSize
                 height: items.ballSize
-                z: 1
+                z: 3  // above other BalanceItems
                 categories: items.ballType
                 collidesWith: items.wallType | items.holeType | items.goalType 
                               | items.buttonType
@@ -306,7 +306,7 @@ ActivityBase {
                 id: debugDraw
                 world: physicsWorld
                 visible: Activity.debugDraw
-                z: 1
+                z: 100
             }            
             
         }
@@ -450,8 +450,10 @@ ActivityBase {
                 items.timer.stop();
                 displayDialog(dialogHelp);
             }
-            onPreviousLevelClicked: Activity.previousLevel()
-            onNextLevelClicked: Activity.nextLevel()
+            onPreviousLevelClicked: if (!Activity.finishRunning)
+                                        Activity.previousLevel()
+            onNextLevelClicked: if (!Activity.finishRunning)
+                                    Activity.nextLevel()
             onHomeClicked: {
                 if (activity.mode == "test")
                     background.startEditor();

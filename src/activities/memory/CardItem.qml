@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -66,15 +66,16 @@ Flipable {
 
     back: Image {
         source: card.pairData.emptyCard
-        width: parent.width
-        height: parent.height
+        sourceSize.width: parent.width
         fillMode: Image.PreserveAspectFit
         anchors.centerIn: parent
+        anchors.fill: parent
         Image {
             source: card.pairData.image
             sourceSize.width: parent.width
-            sourceSize.height: parent.height
+            anchors.fill: parent
             anchors.centerIn: parent
+            anchors.margins: 6 * ApplicationInfo.ratio
             fillMode: Image.PreserveAspectFit
         }
         GCText {
@@ -93,11 +94,11 @@ Flipable {
     // Warning front and back property are reversed. Could not find
     // a way to display back at start time without this trick
     front: Image {
-        width: parent.width
-        height: parent.height
         fillMode: Image.PreserveAspectFit
         source: card.pairData.back
+        sourceSize.width: parent.width
         anchors.centerIn: parent
+        anchors.fill: parent
     }
 
     transform: Rotation {

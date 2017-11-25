@@ -19,15 +19,17 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 
 QtObject {
    property int numberOfSubLevel: 4
    property string instruction: qsTr("Michelangelo, Pieta - 1499")
    property variant levels : [
       {
-         "pixmapfile" : "image/bg.png",
-         "type" : "SHAPE_BACKGROUND_IMAGE"
+         "pixmapfile" : "image/bg.svg",
+         "type" : "SHAPE_BACKGROUND_IMAGE",
+         "width": 702,
+         "height": 515
       },
       {
          "pixmapfile" : "image/Michelangelo_Pieta_c4.png",

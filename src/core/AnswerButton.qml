@@ -22,7 +22,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 Item {
@@ -32,7 +32,7 @@ Item {
     property bool isCorrectAnswer: false
 
     property color normalStateColor: "#fff"
-    property color correctStateColor: "#ffa"
+    property color correctStateColor: "#09f"
     property color wrongStateColor: "#f66"
     property bool blockClicks: false
 
@@ -82,11 +82,13 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         // We need to manually horizonally center the text, because in wrongAnswerAnimation,
         // the x of the text is changed, which would not work if we use an anchor layout.
-        property int horizontallyCenteredX: (button.width - width) >> 1;
+        property int horizontallyCenteredX: (button.width - contentWidth) >> 1;
+        width: button.width
         x: horizontallyCenteredX;
         fontSizeMode: Text.Fit
         font.bold: true
         text: textLabel
+        color: "#373737"
     }
 
     MouseArea {

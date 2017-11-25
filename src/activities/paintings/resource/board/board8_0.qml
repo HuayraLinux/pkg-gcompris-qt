@@ -19,14 +19,16 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 
 QtObject {
    property string instruction: qsTr("Utagawa Hiroshige, The Benzaiten Shrine at Inokashira in Snow - 1760-70")
    property variant levels : [
       {
-         "pixmapfile" : "image/bg.png",
-         "type" : "SHAPE_BACKGROUND_IMAGE"
+         "pixmapfile" : "image/bg.svg",
+         "type" : "SHAPE_BACKGROUND_IMAGE",
+         "width": 702,
+         "height": 515
       },
       {
          "pixmapfile" : "image/HiroshigeInokashiraSnow_d4.png",

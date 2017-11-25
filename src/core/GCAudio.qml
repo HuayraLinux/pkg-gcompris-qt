@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.0
+import QtQuick 2.6
 import QtMultimedia 5.0
 import GCompris 1.0
 
@@ -105,6 +105,12 @@ Item {
         if(!fileId.exists(file) || muted)
             return false
 
+        // @FIXME There is a bug in gstreamer that makes wav files to freeze us on Linux.
+        // For now we don't play wav files at all
+        // https://bugreports.qt.io/browse/QTBUG-49689
+        if(/.wav$/.test(file) && ApplicationInfo.platform == ApplicationInfo.Linux)
+            return false
+
         if(file) {
             // Setting the source to "" on Linux fix a case where the sound is no more played if you play twice the same sound in a row
             source = ""
@@ -137,6 +143,12 @@ Item {
      */
     function append(file) {
         if(!fileId.exists(file) || muted)
+            return false
+
+        // @FIXME There is a bug in gstreamer that makes wav files to freeze us on Linux.
+        // For now we don't play wav files at all
+        // https://bugreports.qt.io/browse/QTBUG-49689
+        if(/.wav$/.test(file) && ApplicationInfo.platform == ApplicationInfo.Linux)
             return false
 
         if(audio.playbackState !== Audio.PlayingState

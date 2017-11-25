@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
+import QtQuick 2.6
 import GCompris 1.0
 
 /**
@@ -129,11 +129,9 @@ Rectangle {
 
     signal stop
 
-
     color: "#696da3"
     border.color: "black"
     border.width: 1
-    z: 1000
 
     function getInitialConfiguration() {
         if(activityName == "") {
@@ -186,6 +184,7 @@ Rectangle {
                     wrapMode: Text.WordWrap
                 }
             }
+            
             Rectangle {
                 color: "#e6e6e6"
                 radius: 6.0
@@ -208,8 +207,21 @@ Rectangle {
                         sourceComponent: dialogActivityContent.content
                         property alias rootItem: dialogActivityContent
                     }
+                } 
+                
+                // The scroll buttons
+                GCButtonScroll {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 5 * ApplicationInfo.ratio
+                    anchors.bottom: flick.bottom
+                    anchors.bottomMargin: 30 * ApplicationInfo.ratio
+                    onUp: flick.flick(0, 1400)
+                    onDown: flick.flick(0, -1400)
+                    upVisible: flick.visibleArea.yPosition <= 0 ? false : true
+                    downVisible: flick.visibleArea.yPosition >= 1 ? false : true
                 }
             }
+
             Item { width: 1; height: 10 }
         }
     }

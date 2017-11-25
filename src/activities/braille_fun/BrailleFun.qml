@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -38,7 +38,7 @@ ActivityBase {
         id: background
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         source: Activity.url + "hillside.svg"
         signal start
         signal stop
@@ -65,8 +65,6 @@ ActivityBase {
 
         onStart: { Activity.start(items) }
         onStop: { Activity.stop() }
-
-        property bool hasWon: false
 
         Item {
             id: planeText
@@ -103,17 +101,7 @@ ActivityBase {
                 to: background.width
                 duration: 11000
                 easing.type: Easing.OutInCirc
-                onRunningChanged: {
-                    // @FIXME, in some case we are stopped before the end
-                    if(planeText.x >= background.width / 2 && running == false) {
-                        if(!hasWon) {
-                            bonus.bad("tux")
-                            charBg.clickable(false)
-                        }
-                    }
-                    // reset the flag either when we start or finish the timer
-                    hasWon = false
-                }
+                loops: Animation.Infinite
             }
         }
 
@@ -181,7 +169,6 @@ ActivityBase {
                                         answerString = answerString + cardRepeater.itemAt(i).brailleChar;
                                     }
                                     if(answerString === items.question) {
-                                        hasWon = true
                                         charBg.clickable(false)
                                         bonus.good("tux")
                                         score.currentSubLevel ++;

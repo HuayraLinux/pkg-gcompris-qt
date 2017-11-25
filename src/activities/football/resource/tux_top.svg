@@ -14,7 +14,8 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    width="109.60852"
-   height="172.24196">
+   height="172.24196"
+   sodipodi:docname="tux_top.svg">
   <metadata
      id="metadata4167">
     <rdf:RDF>
@@ -23,7 +24,31 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+        <dc:date>2015</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Timothée Giet</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
       </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
     </rdf:RDF>
   </metadata>
   <defs
@@ -59,18 +84,6 @@
        id="linearGradient4610-9"
        xlink:href="#linearGradient4604"
        inkscape:collect="always" />
-    <linearGradient
-       id="linearGradient4174"
-       inkscape:collect="always">
-      <stop
-         id="stop4176"
-         offset="0"
-         style="stop-color:#275eb1;stop-opacity:1" />
-      <stop
-         id="stop4178"
-         offset="1"
-         style="stop-color:#e6ecf9;stop-opacity:1" />
-    </linearGradient>
   </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"

@@ -1,6 +1,6 @@
 /* GCompris - template.js
  *
- * Copyright (C) 2015 YOUR NAME <xx@yy.org>
+ * Copyright (C) 2017 YOUR NAME <xx@yy.org>
  *
  * Authors:
  *   <THE GTK VERSION AUTHOR> (GTK+ version)
@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 .pragma library
-.import QtQuick 2.0 as Quick
+.import QtQuick 2.6 as Quick
 
 var currentLevel = 0
 var numberOfLevel = 4

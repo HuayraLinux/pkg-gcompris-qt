@@ -19,7 +19,7 @@
 *   You should have received a copy of the GNU General Public License
 *   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -38,7 +38,7 @@ ActivityBase {
     pageComponent: Image {
         id: background
         source: Activity.url + (modeRGB ? "background.svg" : "background2.svg")
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
 
@@ -138,7 +138,7 @@ ActivityBase {
 
         ColorChooser {
             id: color1
-            hue: activity.modeRGB ? 0 : 300 / 360 /* red / magenta */
+            brushHue: activity.modeRGB ? "-r" : "-m" /* red / magenta */
             source: Activity.url + (activity.modeRGB ? "flashlight-red.svg" : "tube-magenta.svg")
             sourceSize.height: items.chooserHeight
             maxSteps: items.maxSteps
@@ -151,7 +151,7 @@ ActivityBase {
 
         ColorChooser {
             id: color2
-            hue: activity.modeRGB ? 120 / 360 : 60 / 360 /* green / yellow */
+            brushHue: activity.modeRGB ? "-g" : "-y" /* green / yellow */
             source: Activity.url + (activity.modeRGB ? "flashlight-green.svg" : "tube-yellow.svg")
             sourceSize.height: items.chooserHeight
             maxSteps: items.maxSteps
@@ -165,7 +165,7 @@ ActivityBase {
 
         ColorChooser {
             id: color3
-            hue: activity.modeRGB ? 240 / 360 : 180 / 360 /* blue / cyan */
+            brushHue: activity.modeRGB ? "-b" : "-c" /* blue / cyan */
             source: Activity.url + (activity.modeRGB ? "flashlight-blue.svg" : "tube-cyan.svg")
             sourceSize.height: items.chooserHeight
             maxSteps: items.maxSteps

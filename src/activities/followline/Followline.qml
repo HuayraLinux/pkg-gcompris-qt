@@ -19,7 +19,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
+import QtQuick 2.6
 import GCompris 1.0
 
 import "../../core"
@@ -35,7 +35,7 @@ ActivityBase {
         id: background
         source: Activity.url + "background.svg"
         fillMode: Image.PreserveAspectCrop
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
 
         signal start
         signal stop

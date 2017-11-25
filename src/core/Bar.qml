@@ -1,6 +1,6 @@
 /* GCompris - Bar.qml
  *
- * Copyright (C) 2014 Bruno Coudoin <bruno.coudoin@gcompris.net>
+ * Copyright (C) 2014-2016 Bruno Coudoin <bruno.coudoin@gcompris.net>
  *
  * Authors:
  *   Bruno Coudoin <bruno.coudoin@gcompris.net>
@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
+import QtQuick 2.6
 import GCompris 1.0
 import "qrc:/gcompris/src/core/core.js" as Core
 
@@ -46,10 +46,57 @@ Item {
     id: bar
 
     /**
+      * type: real
+      * Minimum size for BarZoom
+      */
+    readonly property real minWidth: (parent.width - 20 -
+                                      10 * ApplicationInfo.ratio) / (totalWidth + textLength)
+
+    /**
+      * type: real
+      * Maximum size for barZoom
+      */
+    readonly property real maxWidth: 1.2 * ApplicationInfo.ratio
+
+    /**
+      * type: real
+      * Length of level String
+      */
+    property real textLength
+
+    /**
+      * type: real
+      * The maximum size allowed for the bar
+      */
+    readonly property real maxBarWidth: (totalWidth+textLength) * maxWidth +
+                               (numberOfButtons - 1) * 5 + 10 * ApplicationInfo.ratio
+    /**
+      * type: real
+      * Font size for text level
+      */
+    readonly property real textSize: (parent.width<maxBarWidth) ? 32 * minWidth / maxWidth : 32
+
+    /**
      * type:real
      * Zoom factor of the bar and its children.
      */
-    property real barZoom: 1.2 * ApplicationInfo.ratio
+    property real barZoom: (parent.width<maxBarWidth) ? minWidth : maxWidth
+
+    /**
+      * type: real
+      * Keeps track of the number of buttons that are displayed
+      */
+    property int numberOfButtons: 0
+
+    //totalWidth has 66 as initial value because it will always have the "hideBar" button
+    /**
+      * type: real
+      * Width of all the buttons
+      */
+    property real totalWidth: 66
+
+    readonly property int fullButton: 66
+    readonly property int halfButton: 30
 
     /**
      * type:BarEnumContent
@@ -104,7 +151,7 @@ Item {
     /**
      * Emitted when the repeat button was clicked.
      *
-     * Implement if your acitivity needs to repeat audio voices.
+     * Implement if your activity needs to repeat audio voices.
      */
     signal repeatClicked
 
@@ -114,6 +161,13 @@ Item {
      * Implement if you want to support repeating a level from the beginning.
      */
     signal reloadClicked
+
+    /**
+     * Emitted when the hint button was clicked.
+     *
+     * Implement if your activity needs a hint to help children.
+     */
+    signal hintClicked
 
     /**
      * Emitted when the home button was clicked.
@@ -135,7 +189,7 @@ Item {
         {
             'bid': exit,
             'contentId': content.exit,
-            'allowed': true
+            'allowed': !ApplicationSettings.isKioskMode
         },
         {
             'bid': about,
@@ -183,6 +237,11 @@ Item {
             'allowed': !ApplicationSettings.isKioskMode
         },
         {
+            'bid': hint,
+            'contentId': content.hint,
+            'allowed': true
+        },
+        {
             'bid': downloadImage,
             'contentId': content.download,
             'allowed': true
@@ -215,7 +274,7 @@ Item {
         source: "qrc:/gcompris/src/core/resource/bar_open.svg";
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        sourceSize.width: 66 * barZoom
+        sourceSize.width: fullButton * barZoom
         MouseArea {
             anchors.fill: parent
 
@@ -225,12 +284,25 @@ Item {
         }
     }
 
+    function computeWidth(bid) {
+        if (bid===levelText) {
+            return 0
+        }
+        else if (bid===previous||bid===next)
+            return halfButton
+        else return fullButton
+    }
+
     function updateContent() {
         var newButtonModel = new Array()
+        numberOfButtons = 0
+        totalWidth = 66;
         for(var def in buttonList) {
             if((content.value & buttonList[def].contentId) &&
                buttonList[def].allowed) {
                 newButtonModel.push(buttonList[def])
+                totalWidth += computeWidth(buttonList[def].bid)
+                numberOfButtons++
             }
         }
         buttonModel = newButtonModel
@@ -311,7 +383,7 @@ Item {
         id: exit
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_exit.svg";
-            sourceSize.width: 66 * barZoom
+            sourceSize.width: fullButton * barZoom
             onClicked: Core.quit(bar.parent.parent);
         }
     }
@@ -319,7 +391,7 @@ Item {
         id: about
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_about.svg";
-            sourceSize.width: 66 * barZoom
+            sourceSize.width: fullButton * barZoom
             onClicked: bar.aboutClicked()
         }
     }
@@ -327,7 +399,7 @@ Item {
         id: help
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_help.svg";
-            sourceSize.width: 66 * barZoom
+            sourceSize.width: fullButton * barZoom
             onClicked: bar.helpClicked()
         }
     }
@@ -335,7 +407,7 @@ Item {
         id: previous
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_previous.svg";
-            sourceSize.width: 30 * barZoom
+            sourceSize.width: halfButton * barZoom
             onClicked: bar.previousLevelClicked()
         }
     }
@@ -344,19 +416,24 @@ Item {
         GCText {
             id: levelTextId
             text: "" + level
-            fontSize: hugeSize
+            fontSize: textSize
             font.weight: Font.DemiBold
             style: Text.Outline
             styleColor: "black"
             color: "white"
             visible: content.level & content.value
+            onTextChanged: {
+                if (level>9)
+                    textLength = fullButton
+                else textLength = halfButton
+            }
         }
     }
     Component {
         id: next
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_next.svg";
-            sourceSize.width: 30 * barZoom
+            sourceSize.width: halfButton * barZoom
             onClicked: bar.nextLevelClicked()
         }
     }
@@ -364,15 +441,23 @@ Item {
         id: repeat
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_repeat.svg";
-            sourceSize.width: 66 * barZoom
+            sourceSize.width: fullButton * barZoom
             onClicked: bar.repeatClicked()
+        }
+    }
+    Component {
+        id: hint
+        BarButton {
+            source: "qrc:/gcompris/src/core/resource/bar_hint.svg";
+            sourceSize.width: fullButton * barZoom
+            onClicked: bar.hintClicked()
         }
     }
     Component {
         id: reload
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_reload.svg";
-            sourceSize.width: 66 * barZoom
+            sourceSize.width: fullButton * barZoom
             onClicked: bar.reloadClicked()
         }
     }
@@ -380,7 +465,7 @@ Item {
         id: config
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_config.svg";
-            sourceSize.width: 66 * barZoom
+            sourceSize.width: fullButton * barZoom
             onClicked: bar.configClicked()
         }
     }
@@ -388,7 +473,7 @@ Item {
         id: home
         BarButton {
             source: "qrc:/gcompris/src/core/resource/bar_home.svg";
-            sourceSize.width: 66 * barZoom
+            sourceSize.width: fullButton * barZoom
             onClicked: bar.homeClicked()
         }
     }
@@ -409,3 +494,4 @@ Item {
 
     /// @endcond
 }
+

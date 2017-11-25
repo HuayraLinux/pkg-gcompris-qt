@@ -95,7 +95,7 @@ function showMessageDialog(parent, informativeText,
                            closeCallback) {
     //console.debug("Core.showMessageDialog: parent=" + parent + " backtrace="); console.trace();
     var qmlStr =
-          'import QtQuick 2.0\n'
+          'import QtQuick 2.6\n'
         + 'GCDialog {\n'
         + '    message: "' + informativeText + '"\n'
         + '    button1Text: "' + button1Text + '"\n'
@@ -161,7 +161,7 @@ function showDownloadDialog(parent, properties) {
             }
         }
         properties.dynamic = true;
-        dialog = downloadDialogComponent.createObject( parent, properties);
+        dialog = downloadDialogComponent.createObject(parent, properties);
         dialog.main = parent
         dialog.start();
     } catch (e) {
@@ -212,7 +212,8 @@ function quit(parent)
     if (aboutToQuit)  // don't execute concurrently
         return;
     aboutToQuit = true;
-
+    GCompris.ApplicationSettings.previousHeight = parent.height;
+    GCompris.ApplicationSettings.previousWidth = parent.width;
     GCompris.ApplicationInfo.abandonAudioFocus()
 
     if (GCompris.DownloadManager.downloadIsRunning()) {

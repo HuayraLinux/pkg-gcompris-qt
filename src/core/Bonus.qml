@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
+import QtQuick 2.6
 import GCompris 1.0
 
 // Requires the global property in the scope:
@@ -104,10 +104,10 @@ Image {
     visible: true
     opacity: 0
     anchors.fill: parent
-    fillMode: Image.Pad
+    anchors.margins: 50 * ApplicationInfo.ratio
+    fillMode: Image.PreserveAspectFit
     z: 1000
     sourceSize.width: parent.width * 0.5
-    sourceSize.height: parent.height * 0.7
 
     /**
      * Triggers win feedback.

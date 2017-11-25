@@ -19,7 +19,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-import QtQuick 2.2
+import QtQuick 2.6
 
 /**
  * Container object with a list of all available translations.
@@ -44,18 +44,22 @@ QtObject {
             { "text": "UK English", "locale": "en_GB.UTF-8" },
             { "text": "American English", "locale": "en_US.UTF-8" },
             //{ "text": "български", "locale": "bg_BG.UTF-8" },
-            //{ "text": "Brezhoneg", "locale": "br_FR.UTF-8" },
+            { "text": "Brezhoneg", "locale": "br_FR.UTF-8" },
+            {"text": "Беларуская", "locale": "be_BY.UTF-8" },
             { "text": "Català", "locale": "ca_ES.UTF-8" },
             //{ "text": "Česká", "locale": "cs_CZ.UTF-8" },
             //{ "text": "Dansk", "locale": "da_DK.UTF-8" },
             { "text": "Deutsch", "locale": "de_DE.UTF-8" },
-            //{ "text": "Ελληνικά", "locale": "el_GR.UTF-8" },
+            { "text": "Ελληνικά", "locale": "el_GR.UTF-8" },
             { "text": "Español", "locale": "es_ES.UTF-8" },
+            { "text": "Eesti", "locale": "et_EE.UTF-8" },
             { "text": "Suomi", "locale": "fi_FI.UTF-8" },
             { "text": "Français", "locale": "fr_FR.UTF-8" },
             //{ "text": "Gàidhlig", "locale": "gd_GB.UTF-8" },
             { "text": "Galego", "locale": "gl_ES.UTF-8" },
+            { "text": "हिन्दी", "locale": "hi_IN.UTF-8" },
             //{ "text": "Magyar", "locale": "hu_HU.UTF-8" },
+            { "text": "Indonesia", "locale": "id_ID.UTF-8" },
             { "text": "Italiano", "locale": "it_IT.UTF-8" },
             //{ "text": "Lietuvių", "locale": "lt_LT.UTF-8" },
             //{ "text": "Latviešu", "locale": "lv_LV.UTF-8" },
@@ -64,6 +68,7 @@ QtObject {
             { "text": "Polski", "locale": "pl_PL.UTF-8" },
             { "text": "Português", "locale": "pt_PT.UTF-8" },
             { "text": "Português do Brasil", "locale": "pt_BR.UTF-8" },
+            { "text": "Română", "locale": "ro_RO.UTF-8" },
             { "text": "Русский", "locale": "ru_RU.UTF-8" },
             { "text": "Slovenský", "locale": "sk_SK.UTF-8" },
             { "text": "Slovenski", "locale": "sl_SI.UTF-8" },

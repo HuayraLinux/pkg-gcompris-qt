@@ -19,8 +19,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.1
-
+import QtQuick 2.6
+import GCompris 1.0
 import "../../core"
 import "clickgame.js" as Activity
 
@@ -38,16 +38,22 @@ ActivityBase {
         focus: true
         fillMode: Image.PreserveAspectCrop
         source: "qrc:/gcompris/src/activities/clickgame/resource/sea1.jpg"
-        sourceSize.width: parent.width
+        sourceSize.width: Math.max(parent.width, parent.height)
 
         Component.onCompleted: {
             activity.start.connect(start)
             activity.stop.connect(stop)
         }
-        onStart: { Activity.start(activity, background, bar, bonus) }
+        onStart: { Activity.start(activity, background, bar, bonus, items) }
         onStop: {
             Activity.stop()
             timer.stop()
+        }
+
+        QtObject {
+            id: items
+            property alias score: score
+            property alias killedFishes: score.currentSubLevel
         }
 
         Timer {
@@ -59,6 +65,16 @@ ActivityBase {
         DialogHelp {
             id: dialogHelpLeftRight
             onClose: home()
+        }
+
+        Score {
+            id: score
+
+            anchors {
+                bottom: parent.bottom
+                right: parent.right
+                margins: 20 * ApplicationInfo.ratio
+            }
         }
 
         Bar {

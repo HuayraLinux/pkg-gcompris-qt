@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
+import QtQuick 2.6
 import GCompris 1.0
 
 /**
@@ -60,29 +60,29 @@ DialogBackground {
         contentText += "<b>" + activityInfo.description + "</b>"
         contentText += "<br/><br/>"
         if(activityInfo.author) {
-            contentText += "<b>" + qsTr("Author") + ": </b>" + activityInfo.author
+            contentText += "<b>" + qsTr("Author:") + " </b>" + activityInfo.author
             contentText += "<br/><br/>"
         }
         if(activityInfo.prerequisite) {
-            contentText += "<b>" + qsTr("Prerequisite") + ": </b>" + activityInfo.prerequisite
+            contentText += "<b>" + qsTr("Prerequisite:") + " </b>" + activityInfo.prerequisite
             contentText += "<br/><br/>"
         }
         if(activityInfo.goal) {
             var goal = reformat(activityInfo.goal)
-            contentText += "<b>" + qsTr("Goal") + ": </b>" + goal
+            contentText += "<b>" + qsTr("Goal:") + " </b>" + goal
             contentText += "<br/><br/>"
         }
         if(activityInfo.manual) {
             var manual = reformat(activityInfo.manual)
-            contentText += "<b>" + qsTr("Manual") + ": </b>" + manual
+            contentText += "<b>" + qsTr("Manual:") + " </b>" + manual
             contentText += "<br/><br/>"
         }
         if(activityInfo.credit) {
-            contentText += "<b>" + qsTr("Credit") + ": </b>" + activityInfo.credit
+            contentText += "<b>" + qsTr("Credit:") + " </b>" + activityInfo.credit
             contentText += "<br/><br/>"
         }
         if(activityInfo.section) {
-            contentText += "<b>" + qsTr("Section: ") + "</b>" + activityInfo.section
+            contentText += "<b>" + qsTr("Section:") + " </b>" + activityInfo.section
             contentText += " (" + activityInfo.name.split('/')[0] + ")"
             contentText += "<br/><br/>"
         }

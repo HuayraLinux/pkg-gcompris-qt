@@ -18,7 +18,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-import QtQuick 2.2
+import QtQuick 2.6
 
 /**
  * QML container for defining all visible child elements of a Bar.
@@ -105,4 +105,12 @@ QtObject {
      * Shown automatically during running download.
      */
     readonly property int download: 256
+
+    /**
+     * type:int
+     * Representation of the hint button.
+     *
+     * Used for displaying a hint to the children to help.
+     */
+    readonly property int hint: 512
 }

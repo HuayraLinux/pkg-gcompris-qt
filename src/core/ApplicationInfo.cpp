@@ -1,4 +1,4 @@
-/* GCompris - ApplicationSettingsDefault.cpp
+/* GCompris - ApplicationInfo.cpp
  *
  * Copyright (C) 2014-2015 Bruno Coudoin <bruno.coudoin@gcompris.net>
  *
@@ -24,13 +24,14 @@
 
 #include "ApplicationInfo.h"
 
-#include <QtCore/QtMath>
-#include <QtCore/QUrl>
-#include <QtCore/QUrlQuery>
-#include <QtGui/QGuiApplication>
-#include <QtGui/QScreen>
-#include <QtCore/QLocale>
-#include <QtQuick/QQuickWindow>
+#include <QtQml>
+#include <QtMath>
+#include <QUrl>
+#include <QUrlQuery>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QLocale>
+#include <QQuickWindow>
 #include <QStandardPaths>
 #include <QSensor>
 
@@ -54,12 +55,12 @@ ApplicationInfo::ApplicationInfo(QObject *parent): QObject(parent)
 #if defined(Q_OS_ANDROID)
     // Put android before checking linux/unix as it is also a linux
     m_platform = Android;
+#elif defined(Q_OS_MAC)
+    m_platform = MacOSX;
 #elif (defined(Q_OS_LINUX) || defined(Q_OS_UNIX))
     m_platform = Linux;
 #elif defined(Q_OS_WIN)
     m_platform = Windows;
-#elif defined(Q_OS_MAC)
-    m_platform = MacOSX;
 #elif defined(Q_OS_IOS)
     m_platform = Ios;
 #elif defined(Q_OS_BLACKBERRY)
@@ -83,12 +84,14 @@ ApplicationInfo::ApplicationInfo(QObject *parent): QObject(parent)
     m_applicationWidth = m_isMobile ? rect.width() : 1120;
 
     if (m_isMobile)
-        connect(qApp->primaryScreen(), SIGNAL(physicalSizeChanged(QSizeF)), this, SLOT(notifyPortraitMode()));
+        connect(qApp->primaryScreen(), &QScreen::physicalSizeChanged, this, &ApplicationInfo::notifyPortraitMode);
 
+// @FIXME this does not work on iOS: https://bugreports.qt.io/browse/QTBUG-50624
+#if not defined(Q_OS_IOS)
     // Get all symbol fonts to remove them
     QFontDatabase database;
     m_excludedFonts = database.families(QFontDatabase::Symbol);
-
+#endif
     // Get fonts from rcc
     const QStringList fontFilters = {"*.otf", "*.ttf"};
     m_fontsFromRcc = QDir(":/gcompris/src/core/resource/fonts").entryList(fontFilters);
@@ -127,8 +130,10 @@ QString ApplicationInfo::getFilePath(const QString &file)
 {
 #if defined(Q_OS_ANDROID)
     return QString("assets:/%1").arg(file);
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACX)
     return QString("%1/../Resources/rcc/%2").arg(QCoreApplication::applicationDirPath(), file);
+#elif defined(Q_OS_IOS)
+    return QString("%1/rcc/%2").arg(QCoreApplication::applicationDirPath(), file);
 #else
     return QString("%1/%2/rcc/%3").arg(QCoreApplication::applicationDirPath(), GCOMPRIS_DATA_FOLDER, file);
 #endif
@@ -231,6 +236,16 @@ QString ApplicationInfo::getVoicesLocale(const QString &locale)
     return localeShort(_locale);
 }
 
+QVariantList ApplicationInfo::localeSort(QVariantList list,
+                                         const QString& locale) const
+{
+    std::sort(list.begin(), list.end(),
+              [&locale,this](const QVariant& a, const QVariant& b) {
+        return (localeCompare(a.toString(), b.toString(), locale) < 0);
+    });
+    return list;
+}
+
 QObject *ApplicationInfo::systeminfoProvider(QQmlEngine *engine,
                                              QJSEngine *scriptEngine)
 {
@@ -241,8 +256,8 @@ QObject *ApplicationInfo::systeminfoProvider(QQmlEngine *engine,
      * the QQuickWindow value
      */
     ApplicationInfo* appInfo = getInstance();
-    connect(ApplicationSettings::getInstance(), SIGNAL(fullscreenChanged()), appInfo,
-            SLOT(notifyFullscreenChanged()));
+    connect(ApplicationSettings::getInstance(), &ApplicationSettings::fullscreenChanged, appInfo,
+            &ApplicationInfo::notifyFullscreenChanged);
     return appInfo;
 }
 
