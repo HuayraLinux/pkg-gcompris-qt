@@ -1,6 +1,0 @@
-W: gcompris-qt source: field-name-typo-in-dep5-copyright licence -> license (line 33)
-W: gcompris-qt source: missing-field-in-dep5-copyright copyright (paragraph at line 74)
-W: gcompris-qt source: missing-field-in-dep5-copyright copyright (paragraph at line 78)
-W: gcompris-qt source: missing-field-in-dep5-copyright copyright (paragraph at line 103)
-W: gcompris-qt source: missing-license-paragraph-in-dep5-copyright gpl (paragraph at line 51)
-W: gcompris-qt source: out-of-date-standards-version 3.9.6 (current is 3.9.8)

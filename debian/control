@@ -1,20 +1,34 @@
 Source: gcompris-qt
 Section: education
 Priority: optional
-Maintainer: Yann Dirson <dirson@debian.org>
-Build-Depends: debhelper (>= 9), cmake, dh-buildinfo,
- qttools5-dev, qttools5-dev-tools, qt5-qmake, qtcreator,
- qtdeclarative5-dev,
- libqt5svg5-dev, qtmultimedia5-dev, libqt5xmlpatterns5-dev, libqt5sensors5-dev,
- qml-module-qtmultimedia, qml-module-qtgraphicaleffects
-Standards-Version: 3.9.6
+Maintainer: Debian/Kubuntu Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+XSBC-Original-Maintainer: Yann Dirson <dirson@debian.org>
+Build-Depends: cmake,
+               debhelper (>= 9),
+               dh-buildinfo,
+               extra-cmake-modules,
+               libqt5sensors5-dev,
+               libqt5svg5-dev,
+               libqt5xmlpatterns5-dev,
+               pkg-kde-tools,
+               qml-module-qtgraphicaleffects,
+               qml-module-qtmultimedia,
+               qt5-qmake,
+               qtdeclarative5-dev,
+               qtmultimedia5-dev,
+               qttools5-dev,
+               qttools5-dev-tools
+Standards-Version: 3.9.7
 Homepage: http://gcompris.net/
-Vcs-git: git://anonscm.debian.org/collab-maint/gcompris-qt.git
-Vcs-browser: http://anonscm.debian.org/gitweb/?p=collab-maint/gcompris-qt.git;a=summary
+Vcs-Browser: https://code.launchpad.net/~kubuntu-packagers/kubuntu-packaging/+git/gcompris
+Vcs-Git: https://git.launchpad.net/~kubuntu-packagers/kubuntu-packaging/+git/gcompris
 
 Package: gcompris-qt
 Architecture: any
-Depends: gcompris-qt-data (= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: gcompris-qt-data (= ${source:Version}),
+         qml-module-qtquick-particles2,
+         ${misc:Depends},
+         ${shlibs:Depends}
 Recommends: libqt5multimedia5-plugins
 Description: Educational games for small children - experimental Qt rewrite
  A large collection of educational games for small children, designed
@@ -34,7 +48,7 @@ Description: data files for gcompris-qt
 
 Package: gcompris-qt-dbg
 Section: debug
-Priority: extra
+Priority: optional
 Architecture: any
 Depends: gcompris-qt (= ${binary:Version}), ${misc:Depends}
 Description: Educational games for small children - debug symbols

@@ -1,3 +1,32 @@
+gcompris-qt (0.81-0ubuntu2) UNRELEASED; urgency=medium
+
+  * Prioity 'extra' depreciated in favour of 'optional'
+
+ -- Rik Mills <rikmills@kubuntu.org>  Mon, 16 Oct 2017 07:28:05 +0100
+
+gcompris-qt (0.81-0ubuntu1) artful; urgency=medium
+
+  * New upstream bugfix release (0.81)
+
+ -- Rik Mills <rikmills@kubuntu.org>  Thu, 28 Sep 2017 15:05:34 +0100
+
+gcompris-qt (0.80-0ubuntu1) artful; urgency=medium
+
+  [ Jonathan Riddell ]
+  * New release
+
+  [ Clive Johnston ]
+  * New release for Ubuntu (Thanks to neon)
+  * New upstream release (0.80)
+
+ -- Clive Johnston <clivejo@kubuntu.org>  Tue, 15 Aug 2017 23:18:26 +0100
+
+gcompris-qt (0.61-1) xenial; urgency=medium
+
+  * Neon fork, new upstream release.
+
+ -- Scarlett Clark <sgclark@kubuntu.org>  Tue, 18 Oct 2016 08:32:03 -0700
+
 gcompris-qt (0.50-3) unstable; urgency=medium
 
   * Complete copyright information.
