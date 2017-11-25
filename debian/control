@@ -18,7 +18,7 @@ Build-Depends: cmake,
                qtmultimedia5-dev,
                qttools5-dev,
                qttools5-dev-tools
-Standards-Version: 3.9.7
+Standards-Version: 4.1.1
 Homepage: http://gcompris.net/
 Vcs-Browser: https://code.launchpad.net/~kubuntu-packagers/kubuntu-packaging/+git/gcompris
 Vcs-Git: https://git.launchpad.net/~kubuntu-packagers/kubuntu-packaging/+git/gcompris
