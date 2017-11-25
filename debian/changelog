@@ -6,6 +6,8 @@ gcompris-qt (0.81-0ubuntu2) UNRELEASED; urgency=medium
   [ Simon Quigley ]
   * Bump debhelper compat to 10.
   * Bump Standards-version to 4.1.1, no changes needed.
+  * Migrate to using dbgsym packages instead of explicitly defining a -
+    dbg package in debian/control.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 25 Nov 2017 16:26:17 -0600
 

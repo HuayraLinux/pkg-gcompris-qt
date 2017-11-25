@@ -41,7 +41,7 @@ override_dh_installdocs:
 	dh_buildinfo
 
 override_dh_strip:
-	dh_strip --dbg-package gcompris-qt-dbg
+	dh_strip --dbgsym-migration='gcompris-qt-dbg (<< 0.81-1~)'
 
 override_dh_auto_clean:
 	dh_auto_clean

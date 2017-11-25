@@ -45,11 +45,3 @@ Description: data files for gcompris-qt
  .
  This package contains the definitions of these standard boards, along
  with associated images.
-
-Package: gcompris-qt-dbg
-Section: debug
-Priority: optional
-Architecture: any
-Depends: gcompris-qt (= ${binary:Version}), ${misc:Depends}
-Description: Educational games for small children - debug symbols
- This package contains the stripped debugging symbols for GCompris.
