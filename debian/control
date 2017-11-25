@@ -30,7 +30,7 @@ Depends: gcompris-qt-data (= ${source:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
 Recommends: libqt5multimedia5-plugins
-Description: Educational games for small children - experimental Qt rewrite
+Description: Educational games for small children - Qt rewrite
  A large collection of educational games for small children, designed
  to be a unified interface to integrate more educational games.
  .
