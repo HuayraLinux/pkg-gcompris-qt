@@ -1,8 +1,12 @@
 gcompris-qt (0.81-0ubuntu2) UNRELEASED; urgency=medium
 
-  * Prioity 'extra' depreciated in favour of 'optional'
+  [ Rik Mills]
+  * Priority 'extra' deprecated in favour of 'optional'.
 
- -- Rik Mills <rikmills@kubuntu.org>  Mon, 16 Oct 2017 07:28:05 +0100
+  [ Simon Quigley ]
+  * Bump debhelper compat to 10.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 25 Nov 2017 16:26:17 -0600
 
 gcompris-qt (0.81-0ubuntu1) artful; urgency=medium
 

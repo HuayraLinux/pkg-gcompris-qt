@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Debian/Kubuntu Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
 XSBC-Original-Maintainer: Yann Dirson <dirson@debian.org>
 Build-Depends: cmake,
-               debhelper (>= 9),
+               debhelper (>= 10),
                dh-buildinfo,
                extra-cmake-modules,
                libqt5sensors5-dev,
