@@ -1,3 +1,15 @@
 # GCompris is an eductional game, therefore is in the correct section: education 
 gcompris-qt: games-package-should-be-section-games
+
+# Upstream doesn't provide a manpage, stop complaining.
 gcompris-qt: binary-without-manpage usr/games/gcompris-qt
+
+# These files are intentionally large, even though it's pedantic, stop whining about it...
+gcompris-qt source: insane-line-length-in-source-file src/activities/clickanddraw/clickanddraw_dataset.js
+gcompris-qt source: insane-line-length-in-source-file src/activities/number_sequence/number_sequence_dataset.js
+
+# Doesn't have autopkgtests
+gcompris-qt source: testsuite-autopkgtest-missing
+
+# There's no alternative HTTPS download location at the moment, override
+gcompris-qt source: debian-watch-uses-insecure-uri http://gcompris.net/download/qt/src/gcompris-qt-([\d.]+).tar.xz
