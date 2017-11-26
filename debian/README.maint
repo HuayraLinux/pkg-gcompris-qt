@@ -1,5 +1,0 @@
-upstream tarball was generated from the git repo using:
-
-(PKG=gcompris-qt; V=HEAD; REV=$(git describe $V);
- REV=${REV#V}; REV=${REV#v};
- git archive --prefix=$PKG-$REV/ $V | xz > ../${PKG}_$REV.orig.tar.xz)
