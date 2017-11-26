@@ -1,4 +1,5 @@
 #!/usr/bin/make -f
+
 export DH_VERBOSE = 1
 export QT_SELECT := qt5
 DPKG_EXPORT_BUILDFLAGS = 1
@@ -7,22 +8,15 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
-
-# main packaging script based on dh7 syntax
 %:
 	dh $@
 
 override_dh_auto_configure:
 	$(overridden_command) -- -DBIN_INSTALL_DIR=/usr/games -DQML_BOX2D_MODULE=disabled
 
-override_dh_auto_build:
-	dh_auto_build
-	# Translation target supposedly needs to be called manually.
-	# https://bugs.kde.org/show_bug.cgi?id=372036#c3
-	cd obj-* && make BuildTranslations
-
 override_dh_install:
-	dh_install --fail-missing
+	dh_install
+	dh_missing --fail-missing
 
 override_dh_installdocs:
 	dh_installdocs
