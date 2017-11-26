@@ -1,9 +1,0 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d120af6..febb8a3 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -468,3 +468,4 @@ add_subdirectory(src)
- 
- add_custom_target(binaries)
- add_dependencies(binaries ${GCOMPRIS_EXECUTABLE_NAME} rcc_core rcc_menu rcc_activities all_activities)
-+include(ECMPoQmTools)
