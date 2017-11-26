@@ -2,7 +2,7 @@ Source: gcompris-qt
 Section: education
 Priority: optional
 Maintainer: Debian/Kubuntu Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
-XSBC-Original-Maintainer: Yann Dirson <dirson@debian.org>
+Uploaders: Simon Quigley <tsimonq2@ubuntu.com>
 Build-Depends: cmake,
                debhelper (>= 10),
                dh-buildinfo,
