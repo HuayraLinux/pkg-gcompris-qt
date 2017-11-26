@@ -1,7 +1,7 @@
 Source: gcompris-qt
 Section: education
 Priority: optional
-Maintainer: Debian/Kubuntu Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Maintainer: Debian Qt Extras Team <debian-qt-kde@lists.debian.org>
 Uploaders: Simon Quigley <tsimonq2@ubuntu.com>
 Build-Depends: cmake,
                debhelper (>= 10),
@@ -20,8 +20,8 @@ Build-Depends: cmake,
                qttools5-dev-tools
 Standards-Version: 4.1.1
 Homepage: http://gcompris.net/
-Vcs-Browser: https://code.launchpad.net/~kubuntu-packagers/kubuntu-packaging/+git/gcompris
-Vcs-Git: https://git.launchpad.net/~kubuntu-packagers/kubuntu-packaging/+git/gcompris
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-kde/qt-extras/gcompris-qt.git
+Vcs-Git: https://anonscm.debian.org/git/pkg-kde/qt-extras/gcompris-qt.git
 
 Package: gcompris-qt
 Architecture: any
