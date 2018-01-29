@@ -3,7 +3,22 @@ Upstream-Name: gcompris-qt
 Source: http://quickgit.kde.org/?p=gcompris.git
 
 Files: *
-Copyright: 2014-2015 Bruno Coudoin <bruno.coudoin@gcompris.net> and others
+Copyright: 2010, 2011 by Alessandro Portale <alessandro@casaportale.de>
+           2014 "Amit Tomar" <a.tomar@outlook.com>
+           2014 Arkit Vora <arkitvora123@gmail.com>
+           2014 Bharath M S <brat.197@gmail.com>
+           2014 Emmanuel Charruau <echarruau@gmail.com>
+           2014 JB BUTET <ashashiwa@gmail.com>
+           2014 Stephane Mankowski <stephane@mankowski.fr>
+           2014 Thibaut ROMAIN <thibrom@gmail.com>
+           2014-2015 Bruno Coudoin <bruno.coudoin@gcompris.net>
+           2014-2015 Holger Kaelberer <holger.k@elberer.de>
+           2015 Pulkit Gupta <pulkitgenius@gmail.com>
+           2015-2016 Johnny Jazeix <jazeix@gmail.com>
+           2016 Stefan Toncu <stefan.toncu29@gmail.com>
+           2016 UTKARSH TIWARI <iamutkarshtiwari@kde.org>
+           2017 Sergey Popov <sergobot@protonmail.com>
+           2017 Ilya Bizyaev <bizyaev@zoho.com>
 License: GPL-3.0+
 
 Files: src/core/ApplicationInfo.* src/core/ApplicationSettings.*
@@ -34,20 +49,6 @@ License: CC-BY-3.0
 Copyright: 2014 Gabriel Araujo
 Comment: https://www.freesound.org/people/GabrielAraujo/sounds/242501/
 
-Files:
- src/core/resource/bonus/flower_bad.png
- src/core/resource/bonus/flower_good.png
- src/core/resource/bonus/smiley_bad.png
- src/core/resource/bonus/smiley_good.png
-Copyright: Pascal Georges
-License: GPL-2.0
-
-Files:
- src/core/resource/bonus/tux_good.png
- src/core/resource/bonus/tux_bad.png
-Copyright: Franck Doucet
-License: GPL-2.0
-
 Files: src/core/resource/intro.ogg
 License: GPL-2.0
 Copyright:
@@ -65,11 +66,6 @@ Files: src/activities/chess/resource/*
 Copyright: Igor Krizanovskij
 License: CC-0
 Comment: https://openclipart.org/detail/24125/chess-symbols-set
-
-Files: src/activities/chess/resource/background.svg
-Copyright: 2015 Lazur URH
-License: CC-0
-Comment: https://openclipart.org/detail/222623/simple-scenery-2
 
 Files: src/activities/paintings/resource/image/*
 Copyright: Nicolas Pioch
@@ -112,33 +108,32 @@ Copyright: 2007 freesound.org forum user "ocea"
 License: CC-sampling-plus-1.0
 Comment: see http://www.freesound.org/people/ocea/sounds/29534/
 
-Files:
- android/res/drawable-*/icon.png
- src/activities/mosaic/resource/mouse_on_cheese.svg
- src/activities/mosaic/resource/mushroom_house.svg
- src/activities/mosaic/resource/pencils_paper.svg
- src/activities/mosaic/resource/aquarela_colors.svg
- src/activities/mosaic/resource/white_cake.svg
- src/activities/color_mix/resource/flashlight*
- src/activities/instruments/resource/horn.svg
- src/activities/instruments/resource/clarinet.svg
- src/activities/instruments/resource/snare_drum.svg
- src/activities/instruments/resource/trombone.svg
- src/activities/instruments/resource/tuba.svg
- src/activities/instruments/resource/flute_traversiere.svg
- src/activities/instruments/resource/trumpet.svg
- src/activities/instruments/resource/maracas.svg
- src/activities/instruments/resource/timpani.svg
- src/activities/instruments/resource/saxophone.svg
- src/activities/instruments/resource/harp.svg
- src/activities/instruments/resource/violin.svg
- src/activities/reversecount/resource/mystica_Aquarium_fish_-_Amphiprion_percula.svg
- src/activities/reversecount/resource/drunken_duck_cartoon_globefish_kugelfisch.svg
- src/activities/reversecount/resource/pepinux_Pez_dorado.svg
- src/activities/reversecount/resource/molumen_Codfish.svg
- src/activities/wordsgame/resource/background.svg
- src/activities/intro_gravity/resource/neptune.svg
- src/activities/lightsoff/resource/building.svg
+Files: android/res/drawable-*/icon.png
+       src/activities/mosaic/resource/mouse_on_cheese.svg
+       src/activities/mosaic/resource/mushroom_house.svg
+       src/activities/mosaic/resource/pencils_paper.svg
+       src/activities/mosaic/resource/aquarela_colors.svg
+       src/activities/mosaic/resource/white_cake.svg
+       src/activities/color_mix/resource/flashlight*
+       src/activities/instruments/resource/horn.svg
+       src/activities/instruments/resource/clarinet.svg
+       src/activities/instruments/resource/snare_drum.svg
+       src/activities/instruments/resource/trombone.svg
+       src/activities/instruments/resource/tuba.svg
+       src/activities/instruments/resource/flute_traversiere.svg
+       src/activities/instruments/resource/trumpet.svg
+       src/activities/instruments/resource/maracas.svg
+       src/activities/instruments/resource/timpani.svg
+       src/activities/instruments/resource/saxophone.svg
+       src/activities/instruments/resource/harp.svg
+       src/activities/instruments/resource/violin.svg
+       src/activities/reversecount/resource/mystica_Aquarium_fish_-_Amphiprion_percula.svg
+       src/activities/reversecount/resource/drunken_duck_cartoon_globefish_kugelfisch.svg
+       src/activities/reversecount/resource/pepinux_Pez_dorado.svg
+       src/activities/reversecount/resource/molumen_Codfish.svg
+       src/activities/wordsgame/resource/background.svg
+       src/activities/intro_gravity/resource/neptune.svg
+       src/activities/lightsoff/resource/building.svg
 Copyright: Various
 License: Public-domain
 
@@ -151,13 +146,9 @@ Files: src/activities/details/details.svg
 Copyright: 2006 Lapo Calamandrei, Jakub Steiner
 License: GPL-2.0
 
-Files: gcompris.appdata.xml
-License: CC-0
-Copyright: 2015 Bruno Coudoin
-
 Files: debian/*
 Copyright: 2015 Yann Dirson <dirson@debian.org>
-           2017 Simon Quigley <tsimonq2@ubuntu.com>
+           2017-2018 Simon Quigley <tsimonq2@ubuntu.com>
 License: GPL-3.0+
 
 License: GPL-3.0+
