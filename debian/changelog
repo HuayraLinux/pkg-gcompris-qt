@@ -1,4 +1,4 @@
-gcompris-qt (0.81-1) UNRELEASED; urgency=medium
+gcompris-qt (0.81-1) unstable; urgency=medium
 
   [ Rik Mills]
   * Priority 'extra' deprecated in favour of 'optional'.
@@ -10,7 +10,7 @@ gcompris-qt (0.81-1) UNRELEASED; urgency=medium
   * Migrate to using dbgsym packages instead of explicitly defining a -
     dbg package in debian/control.
 
- -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 25 Nov 2017 16:26:17 -0600
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Sun, 28 Jan 2018 23:10:23 -0600
 
 gcompris-qt (0.81-0ubuntu1) artful; urgency=medium
 
