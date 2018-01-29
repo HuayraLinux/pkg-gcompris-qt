@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Debian Qt Extras Team <debian-qt-kde@lists.debian.org>
 Uploaders: Simon Quigley <tsimonq2@ubuntu.com>
 Build-Depends: cmake,
-               debhelper (>= 10),
+               debhelper (>= 11),
                dh-buildinfo,
                extra-cmake-modules,
                libqt5sensors5-dev,
