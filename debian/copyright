@@ -1,6 +1,6 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: gcompris-qt
-Source: http://quickgit.kde.org/?p=gcompris.git
+Source: https://github.com/gcompris/GCompris-qt
 
 Files: *
 Copyright: 2010, 2011 by Alessandro Portale <alessandro@casaportale.de>
@@ -32,10 +32,6 @@ License: Apache-2.0
 Files: android/src/net/gcompris/GComprisActivity.java
 Copyright: 2013 Digia Plc
 License: GPL-3.0 or LGPL-2.1 with Digia-1.1 exception
-
-Files: src/core/resource/fonts/Andika-R.ttf
-Copyright: (C) 2011-2015 Nicolas Spalinger, Christian Perrier, Daniel Glassey
-License: OFL-1.1
 
 Files: src/core/resource/fonts/OpenDyslexic-Regular.*
 Copyright: 2012 Abelardo Gonzale
@@ -82,27 +78,6 @@ Copyright: various
 License: Public-domain
 Comment: OpenClipart
 
-Files: external/qml-box2d/*
-Copyright: various people, see https://github.com/qml-box2d/qml-box2d
-License: zlib-license
- This software is provided 'as-is', without any express or implied warranty.
- In no event will the authors be held liable for any damages arising from
- the use of this software.
- .
- Permission is granted to anyone to use this software for any purpose,
- including commercial applications, and to alter it and redistribute it
- freely, subject to the following restrictions:
- .
- 1. The origin of this software must not be misrepresented; you must not
-    claim that you wrote the original software. If you use this software in
-    a product, an acknowledgment in the product documentation would be
-    appreciated but is not required.
- .
- 2. Altered source versions must be plainly marked as such, and must not be
-    misrepresented as being the original software.
- .
- 3. This notice may not be removed or altered from any source distribution.
-
 Files: src/activities/instruments/resource/drum_kit.ogg
 Copyright: 2007 freesound.org forum user "ocea"
 License: CC-sampling-plus-1.0
@@ -136,11 +111,6 @@ Files: android/res/drawable-*/icon.png
        src/activities/lightsoff/resource/building.svg
 Copyright: Various
 License: Public-domain
-
-Files: platforms/ios/Images.xcassets/AppIcon.appiconset/*
-License: Public-domain
-Copyright: 2010 openclipart forum user rg1024
-Comment: see http://openclipart.org/detail/99229/landscape-by-rg1024d
 
 Files: src/activities/details/details.svg
 Copyright: 2006 Lapo Calamandrei, Jakub Steiner
@@ -765,7 +735,7 @@ License: CC-0
  of his knowledge, the work of authorship identified is in the public
  domain of the country from which the work is published, or (b) hereby
  dedicates whatever copyright the dedicators holds in the work of authorship
- identified below (the "Work") to the public domain. A certifier, morever,
+ identified below (the "Work") to the public domain. A certifier, moreover,
  dedicates any copyright interest he may have in the associated work, and
  for these purposes, is described as a "dedicator" below.
  .
