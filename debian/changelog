@@ -9,6 +9,7 @@ gcompris-qt (0.81-1) UNRELEASED; urgency=medium
   * Bump Standards-version to 4.1.3, no changes needed.
   * Migrate to using dbgsym packages instead of explicitly defining a -
     dbg package in debian/control.
+  * Move the Vcs-* links to Salsa.
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 25 Nov 2017 16:26:17 -0600
 
