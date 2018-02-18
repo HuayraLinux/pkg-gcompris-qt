@@ -6,6 +6,7 @@ gcompris-qt (0.81-1) UNRELEASED; urgency=medium
   [ Simon Quigley ]
   * Add my name to Uploaders and move to the Debian Qt/KDE Team umbrella
     (Closes: #826428).
+  * Add missing runtime dependencies (Closes: #820496, #889672).
   * Bump debhelper compat to 11.
   * Bump Standards-version to 4.1.3, no changes needed.
   * Migrate to using dbgsym packages instead of explicitly defining a -
