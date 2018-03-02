@@ -13,6 +13,10 @@ gcompris-qt (0.81-1) UNRELEASED; urgency=medium
     dbg package in debian/control.
   * Move the Vcs-* links to Salsa.
 
+  [ Ignacio Losiggio ]
+  * Import to huayra
+  * Make adaptations for stretch
+
  -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 25 Nov 2017 16:26:17 -0600
 
 gcompris-qt (0.81-0ubuntu1) artful; urgency=medium

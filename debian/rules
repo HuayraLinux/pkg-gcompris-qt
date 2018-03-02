@@ -16,7 +16,7 @@ override_dh_auto_configure:
 
 override_dh_install:
 	dh_install
-	dh_missing --fail-missing
+	#dh_missing --fail-missing
 
 override_dh_installdocs:
 	dh_installdocs
