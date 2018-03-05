@@ -1,4 +1,4 @@
-gcompris-qt (0.81-1) UNRELEASED; urgency=medium
+gcompris-qt (0.81-1~huayra) unstable; urgency=medium
 
   [ Rik Mills]
   * Priority 'extra' deprecated in favour of 'optional'.
@@ -16,6 +16,7 @@ gcompris-qt (0.81-1) UNRELEASED; urgency=medium
   [ Ignacio Losiggio ]
   * Import to huayra
   * Make adaptations for stretch
+  * Added myself to the uploaders
 
  -- Simon Quigley <tsimonq2@ubuntu.com>  Sat, 25 Nov 2017 16:26:17 -0600
 

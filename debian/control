@@ -2,7 +2,8 @@ Source: gcompris-qt
 Section: education
 Priority: optional
 Maintainer: Debian Qt Extras Team <debian-qt-kde@lists.debian.org>
-Uploaders: Simon Quigley <tsimonq2@ubuntu.com>
+Uploaders: Simon Quigley <tsimonq2@ubuntu.com>,
+           Ignacio Losiggio <iglosiggio@gmail.com>
 Build-Depends: cmake,
                debhelper (>= 10),
                dh-buildinfo,
